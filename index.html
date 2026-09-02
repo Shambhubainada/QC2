@@ -20,7 +20,7 @@ section{background:#fff;border-radius:9px;padding:18px;margin-bottom:18px;box-sh
 .badge{display:inline-block;padding:4px 7px;border-radius:12px;background:#eef3f8;font-weight:700}.warn{background:#fff1d6}.danger{background:#ffe0e0}
 .hide{display:none}.empty{text-align:center;padding:25px;color:#788699}
 @media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}header h1{font-size:18px}}@media(max-width:500px){.cards{grid-template-columns:1fr 1fr}main{padding:10px}.card{padding:12px}}
-@media(max-width:800px){.priority-preview-grid{grid-template-columns:1fr!important}} .priority-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}</style>
+@media(max-width:800px){.priority-preview-grid{grid-template-columns:1fr!important}} .priority-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px} .priority-preview{display:block!important;border:2px solid #1476df;border-radius:14px;margin-top:16px;padding:14px;background:#fff} </style>
 </head>
 <body>
 <header><div><h1>WAREHOUSE QUALITY CONTROL</h1><small>Live Stock • Priority • Treatment Monitoring</small></div><div id="clock">--</div></header>
@@ -49,16 +49,20 @@ section{background:#fff;border-radius:9px;padding:18px;margin-bottom:18px;box-sh
 <button onclick="showById('fum')">⚠ Fumigation Due Details</button>
 <button onclick="showById('search')">🔎 Search Stack</button>
 </div>
-</section>
 
-<section id="priorityPreview">
-<h2>Priority View — FIFO</h2><p>Oldest receipt first • Wheat and Rice / FRK RRA kept separate.</p>
+<section id="priorityPreview" class="priority-preview">
+<h2>⚑ PRIORITY VIEW — FIFO</h2><p>Oldest receipt first • Wheat and Rice / FRK RRA kept separate.</p>
 <div class="priority-preview-grid">
 <div><h3 style="margin:0 0 8px;font-size:15px">🌾 Wheat Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityWheatPreview"></tbody></table></div></div>
 <div><h3 style="margin:0 0 8px;font-size:15px">🌾 Rice / FRK RRA Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityRicePreview"></tbody></table></div></div>
 </div>
 <div class="toolbar" style="margin-top:12px;margin-bottom:0"><button onclick="showById('priority')">View Full Priority View →</button></div>
 </section>
+</section>
+
+
+
+
 
 <section id="priority" class="hide">
 <h2>Priority View — FIFO</h2><p>Oldest valid receipt date first; empty/zero-quantity stacks excluded.</p>
@@ -119,7 +123,7 @@ function updateCounts(){
  document.getElementById("underCount").textContent=rows.filter(r=>isTrue(val(r,"UnderCover_Flag","Under Cover","UnderCover"))).length;
  document.getElementById("fumCount").textContent=rows.filter(r=>isTrue(val(r,"FumigationDue_>30D_Flag","Fumigation Due","FumigationDue"))).length;
 }
-function show(id,b){document.querySelectorAll("main section").forEach(s=>s.classList.add("hide"));document.getElementById(id).classList.remove("hide");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active")}
+function show(id,b){document.querySelectorAll("main section").forEach(s=>s.classList.add("hide"));document.getElementById(id).classList.remove("hide");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));if(b)b.classList.add("active")}
 function showById(id){let b=[...document.querySelectorAll("nav button")].find(x=>x.textContent.toLowerCase().includes(id==="under"?"under":id==="fum"?"fumigation":id==="priority"?"priority":"search"));show(id,b||document.querySelector("nav button"))}
 function rowEmpty(t){return `<tr><td colspan="${t}" class="empty">No matching stack found.</td></tr>`}
 function renderPriorityPreview(){
