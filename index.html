@@ -20,7 +20,8 @@ section{background:#fff;border-radius:9px;padding:18px;margin-bottom:18px;box-sh
 .badge{display:inline-block;padding:4px 7px;border-radius:12px;background:#eef3f8;font-weight:700}.warn{background:#fff1d6}.danger{background:#ffe0e0}
 .hide{display:none}.empty{text-align:center;padding:25px;color:#788699}
 @media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}header h1{font-size:18px}}@media(max-width:500px){.cards{grid-template-columns:1fr 1fr}main{padding:10px}.card{padding:12px}}
-@media(max-width:800px){.priority-preview-grid{grid-template-columns:1fr!important}} .priority-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px} .priority-preview{display:block!important;border:2px solid #1476df;border-radius:14px;margin-top:16px;padding:14px;background:#fff} </style>
+@media(max-width:800px){.priority-preview-grid{grid-template-columns:1fr!important}} .priority-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:800px){.priority-preview-grid{grid-template-columns:1fr!important}} .priority-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+</style>
 </head>
 <body>
 <header><div><h1>WAREHOUSE QUALITY CONTROL</h1><small>Live Stock • Priority • Treatment Monitoring</small></div><div id="clock">--</div></header>
@@ -50,19 +51,25 @@ section{background:#fff;border-radius:9px;padding:18px;margin-bottom:18px;box-sh
 <button onclick="showById('search')">🔎 Search Stack</button>
 </div>
 
-<section id="priorityPreview" class="priority-preview">
-<h2>⚑ PRIORITY VIEW — FIFO</h2><p>Oldest receipt first • Wheat and Rice / FRK RRA kept separate.</p>
+<div id="priorityHome" style="display:block!important;background:#fff;border:2px solid #1476df;border-radius:14px;padding:16px;margin-top:18px;box-shadow:0 3px 10px #0002">
+<h2 style="margin:0 0 6px">⚑ Priority View — FIFO</h2>
+<p style="margin:0 0 14px;color:#667">Oldest receipt first • Wheat and Rice / FRK RRA separate • Empty/zero quantity stacks excluded.</p>
+<div class="priority-preview-grid">
+<div><h3 style="margin:0 0 8px;font-size:15px">🌾 Wheat Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityWheatHome"></tbody></table></div></div>
+<div><h3 style="margin:0 0 8px;font-size:15px">🍚 Rice / FRK RRA Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityRiceHome"></tbody></table></div></div>
+</div>
+<div style="margin-top:12px"><button onclick="showById('priority')">View Full Priority View →</button></div>
+</div>
+</section>
+
+<section id="priorityPreview">
+<h2>Priority View — FIFO</h2><p>Oldest receipt first • Wheat and Rice / FRK RRA kept separate.</p>
 <div class="priority-preview-grid">
 <div><h3 style="margin:0 0 8px;font-size:15px">🌾 Wheat Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityWheatPreview"></tbody></table></div></div>
 <div><h3 style="margin:0 0 8px;font-size:15px">🌾 Rice / FRK RRA Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityRicePreview"></tbody></table></div></div>
 </div>
 <div class="toolbar" style="margin-top:12px;margin-bottom:0"><button onclick="showById('priority')">View Full Priority View →</button></div>
 </section>
-</section>
-
-
-
-
 
 <section id="priority" class="hide">
 <h2>Priority View — FIFO</h2><p>Oldest valid receipt date first; empty/zero-quantity stacks excluded.</p>
@@ -110,7 +117,7 @@ async function load(){
   rows=j.table.rows.map(rr=>{let o={};cols.forEach((c,i)=>o[c]=rr.c[i]?rr.c[i].f??rr.c[i].v??"": "");return o})
     .filter(r=>val(r,"Stack No.","Stack No") && num(val(r,"Qty (MT)","Qty"))>0);
   document.getElementById("status").textContent=`✓ Live data connected • ${rows.length} active stacks • Last refresh ${new Date().toLocaleTimeString()}`;
-  updateCounts();renderPriority();renderPriorityPreview();renderUnder();renderFum();renderSearch();
+  updateCounts();renderPriority();renderPriorityHome();renderUnder();renderFum();renderSearch();
  }catch(e){
   document.getElementById("status").textContent="⚠ Live data could not be read. Check that the Master Stock sheet is published/accessible to everyone.";
   console.error(e);
@@ -123,7 +130,7 @@ function updateCounts(){
  document.getElementById("underCount").textContent=rows.filter(r=>isTrue(val(r,"UnderCover_Flag","Under Cover","UnderCover"))).length;
  document.getElementById("fumCount").textContent=rows.filter(r=>isTrue(val(r,"FumigationDue_>30D_Flag","Fumigation Due","FumigationDue"))).length;
 }
-function show(id,b){document.querySelectorAll("main section").forEach(s=>s.classList.add("hide"));document.getElementById(id).classList.remove("hide");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));if(b)b.classList.add("active")}
+function show(id,b){document.querySelectorAll("main section").forEach(s=>s.classList.add("hide"));document.getElementById(id).classList.remove("hide");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active")}
 function showById(id){let b=[...document.querySelectorAll("nav button")].find(x=>x.textContent.toLowerCase().includes(id==="under"?"under":id==="fum"?"fumigation":id==="priority"?"priority":"search"));show(id,b||document.querySelector("nav button"))}
 function rowEmpty(t){return `<tr><td colspan="${t}" class="empty">No matching stack found.</td></tr>`}
 function renderPriorityPreview(){
@@ -135,6 +142,14 @@ function renderPriorityPreview(){
   document.getElementById("priorityRicePreview").innerHTML=make(rice);
 }
 
+function renderPriorityHome(){
+  let a=rows.slice().sort((x,y)=>dateSort(dateVal(x))-dateSort(dateVal(y)));
+  const wheat=a.filter(r=>!isRice(r)).slice(0,5), rice=a.filter(isRice).slice(0,5);
+  const days=r=>{let d=dateSort(dateVal(r));return d===Infinity?"":Math.max(0,Math.floor((Date.now()-d)/86400000))};
+  const make=(arr)=>arr.length?arr.map((r,i)=>`<tr><td><b>${i+1}</b></td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${days(r)}</td></tr>`).join(""):`<tr><td colspan="6" class="empty">No priority stack found.</td></tr>`;
+  document.getElementById("priorityWheatHome").innerHTML=make(wheat);
+  document.getElementById("priorityRiceHome").innerHTML=make(rice);
+}
 function renderPriority(){
  let a=rows.slice().sort((x,y)=>dateSort(dateVal(x))-dateSort(dateVal(y)));
  if(priorityFilter==="wheat")a=a.filter(r=>!isRice(r)); if(priorityFilter==="rice")a=a.filter(isRice);
