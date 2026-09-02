@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Warehouse Quality Control</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6fa;color:#172b4d}
+header{background:#082b55;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+header h1{margin:0;font-size:22px}header small{opacity:.8}
+nav{background:#fff;padding:10px 15px;display:flex;gap:8px;overflow:auto;box-shadow:0 2px 8px #0001;position:sticky;top:0;z-index:5}
+nav button{border:0;background:#eef3f8;color:#12345b;padding:10px 14px;border-radius:6px;font-weight:700;white-space:nowrap;cursor:pointer}nav button.active{background:#1476df;color:white}
+main{max-width:1450px;margin:auto;padding:18px}
+.status{background:#fff;border-left:5px solid #1476df;padding:12px 15px;border-radius:7px;margin-bottom:16px;box-shadow:0 2px 6px #0001}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.card{background:#fff;border-radius:9px;padding:16px;box-shadow:0 2px 7px #0001}.card b{font-size:27px;display:block;margin-top:5px}.card span{font-size:12px;color:#667}
+section{background:#fff;border-radius:9px;padding:18px;margin-bottom:18px;box-shadow:0 2px 7px #0001}section h2{margin:0 0 5px;font-size:19px}section p{margin:0 0 15px;color:#6a788b;font-size:13px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar input,.toolbar select{padding:10px;border:1px solid #ccd6e2;border-radius:6px;min-width:180px}
+.tablewrap{overflow:auto;max-height:520px;border:1px solid #e2e8ef;border-radius:7px}table{width:100%;border-collapse:collapse;min-width:900px;font-size:13px}th{background:#0b315d;color:#fff;padding:10px;text-align:left;position:sticky;top:0}td{padding:9px;border-bottom:1px solid #e9edf2}tr:hover td{background:#f7faff}
+.badge{display:inline-block;padding:4px 7px;border-radius:12px;background:#eef3f8;font-weight:700}.warn{background:#fff1d6}.danger{background:#ffe0e0}
+.hide{display:none}.empty{text-align:center;padding:25px;color:#788699}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}header h1{font-size:18px}}@media(max-width:500px){.cards{grid-template-columns:1fr 1fr}main{padding:10px}.card{padding:12px}}
+@media(max-width:800px){.priority-preview-grid{grid-template-columns:1fr!important}} .priority-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}</style>
+</head>
+<body>
+<header><div><h1>WAREHOUSE QUALITY CONTROL</h1><small>Live Stock • Priority • Treatment Monitoring</small></div><div id="clock">--</div></header>
+<nav>
+<button class="active" onclick="show('dashboard',this)">Dashboard</button>
+<button onclick="show('priority',this)">Priority View</button>
+<button onclick="show('under',this)">Under Cover</button>
+<button onclick="show('fum',this)">Fumigation Due</button>
+<button onclick="show('search',this)">Search Stack</button>
+</nav>
+<main>
+<div class="status" id="status">Connecting to Google Sheet…</div>
+<div class="cards">
+<div class="card">Total Stock Stacks<b id="total">—</b></div>
+<div class="card">Wheat<b id="wheat">—</b></div>
+<div class="card">Rice / FRK RRA<b id="rice">—</b></div>
+<div class="card">Under Cover<b id="underCount">—</b></div>
+<div class="card">Fumigation Due &gt;30D<b id="fumCount">—</b></div>
+</div>
+
+<section id="dashboard">
+<h2>Quick Access</h2><p>Live warehouse quality-control views.</p>
+<div class="toolbar">
+<button onclick="showById('priority')">⚑ Priority View</button>
+<button onclick="showById('under')">▣ Under Cover Details</button>
+<button onclick="showById('fum')">⚠ Fumigation Due Details</button>
+<button onclick="showById('search')">🔎 Search Stack</button>
+</div>
+</section>
+
+<section id="priorityPreview">
+<h2>Priority View — FIFO</h2><p>Oldest receipt first • Wheat and Rice / FRK RRA kept separate.</p>
+<div class="priority-preview-grid">
+<div><h3 style="margin:0 0 8px;font-size:15px">🌾 Wheat Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityWheatPreview"></tbody></table></div></div>
+<div><h3 style="margin:0 0 8px;font-size:15px">🌾 Rice / FRK RRA Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityRicePreview"></tbody></table></div></div>
+</div>
+<div class="toolbar" style="margin-top:12px;margin-bottom:0"><button onclick="showById('priority')">View Full Priority View →</button></div>
+</section>
+
+<section id="priority" class="hide">
+<h2>Priority View — FIFO</h2><p>Oldest valid receipt date first; empty/zero-quantity stacks excluded.</p>
+<div class="toolbar"><button onclick="priorityFilter='all';renderPriority()">All</button><button onclick="priorityFilter='wheat';renderPriority()">Wheat</button><button onclick="priorityFilter='rice';renderPriority()">Rice / FRK RRA</button></div>
+<div class="tablewrap"><table><thead><tr><th>Priority</th><th>Sr No.</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Commodity / Crop Year</th><th>Qty (MT)</th><th>Cat</th><th>Remarks</th></tr></thead><tbody id="priorityBody"></tbody></table></div>
+</section>
+
+<section id="under" class="hide">
+<h2>Currently Under Cover</h2><p>Details are taken from the Master Stock UnderCover_Flag field.</p>
+<div class="tablewrap"><table><thead><tr><th>Sr No.</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Commodity</th><th>Qty (MT)</th><th>Under Cover</th><th>Remarks</th></tr></thead><tbody id="underBody"></tbody></table></div>
+</section>
+
+<section id="fum" class="hide">
+<h2>Fumigation Due — &gt;30 Days</h2><p>Stacks flagged by the Master Stock FumigationDue_&gt;30D_Flag field.</p>
+<div class="tablewrap"><table><thead><tr><th>Sr No.</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Commodity</th><th>Qty (MT)</th><th>Last Fumigation</th><th>Fumigation Date</th><th>Remarks</th></tr></thead><tbody id="fumBody"></tbody></table></div>
+</section>
+
+<section id="search" class="hide">
+<h2>Search Stack</h2><p>Search the live Master Stock data by stack, shed, commodity or receipt date.</p>
+<div class="toolbar"><input id="q" placeholder="Enter stack / shed / commodity…" oninput="renderSearch()"></div>
+<div class="tablewrap"><table><thead><tr><th>Sr No.</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Commodity</th><th>Qty (MT)</th><th>Status</th><th>Last Fumigation</th></tr></thead><tbody id="searchBody"></tbody></table></div>
+</section>
+</main>
+<script>
+const SHEET_ID="1igJ0rzEp3txMDdhjwjrMB5V9BkJcyjt74g1xWh3YSHo";
+const SHEET_NAME="Master Stock";
+let rows=[],priorityFilter="all";
+
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function val(r,...names){for(const n of names){if(r[n]!==undefined&&r[n]!==null&&String(r[n]).trim()!=="")return String(r[n]).trim()}return ""}
+function num(x){let n=parseFloat(String(x).replace(/,/g,""));return isNaN(n)?0:n}
+function isTrue(x){return /^(true|yes|y|1|under\s*cover|due|required)$/i.test(String(x).trim())}
+function commodity(r){return val(r,"Commodity / Crop Year","Commodity/Crop Year","Commodity","Crop Year")}
+function isRice(r){return /rice|frk|rra/i.test(commodity(r))}
+function dateVal(r){return val(r,"Receipt Date","RDate of Receipt","RDate")}
+function dateSort(x){let s=String(x).trim(); if(!s)return Infinity; let d=new Date(s); if(!isNaN(d))return d.getTime(); let m=s.match(/(\\d{1,2})[.\\/-](\\d{1,2})[.\\/-](\\d{2,4})/); if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[2]-1,+m[1]).getTime()}return Infinity}
+
+async function load(){
+ try{
+  const base=`https://docs.google.com/spreadsheets/d/${SHEET_ID}`;
+  const csv=await fetch(`${base}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}`,{cache:"no-store"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.text()});
+  rows=parseCSV(csv).filter(r=>val(r,"Stack No.","Stack No") && num(val(r,"Qty (MT)","Qty"))>0);
+  document.getElementById("status").textContent=`✓ Live data connected • ${rows.length} active stacks • Last refresh ${new Date().toLocaleTimeString()}`;
+  updateCounts();renderPriority();renderPriorityPreview();renderUnder();renderFum();renderSearch();
+ }catch(e){document.getElementById("status").textContent="⚠ Live data could not be read. Check Sheet sharing: Anyone with the link → Viewer.";console.error(e)}
+}
+function parseCSV(text){
+ const lines=text.split(/\r?\n/).filter(x=>x.trim()!=="");
+ function parse(line){let a=[],c="",q=false;for(let i=0;i<line.length;i++){let ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){c+='"';i++}else q=!q}else if(ch===','&&!q){a.push(c);c=""}else c+=ch}a.push(c);return a}
+ if(!lines.length)return []; const h=parse(lines[0]).map(x=>x.trim());
+ return lines.slice(1).map(line=>{const a=parse(line),o={};h.forEach((k,i)=>o[k]=a[i]??"");return o});
+}
+function updateCounts(){
+ document.getElementById("total").textContent=rows.length;
+ document.getElementById("wheat").textContent=rows.filter(r=>!isRice(r)).length;
+ document.getElementById("rice").textContent=rows.filter(isRice).length;
+ document.getElementById("underCount").textContent=rows.filter(r=>isTrue(val(r,"UnderCover_Flag","Under Cover","UnderCover"))).length;
+ document.getElementById("fumCount").textContent=rows.filter(r=>isTrue(val(r,"FumigationDue_>30D_Flag","Fumigation Due","FumigationDue"))).length;
+}
+function show(id,b){document.querySelectorAll("main section").forEach(s=>s.classList.add("hide"));document.getElementById(id).classList.remove("hide");if(id==="dashboard")document.getElementById("priorityPreview").classList.remove("hide");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));if(b)b.classList.add("active")}
+function showById(id){let b=[...document.querySelectorAll("nav button")].find(x=>x.textContent.toLowerCase().includes(id==="under"?"under":id==="fum"?"fumigation":id==="priority"?"priority":"search"));show(id,b||document.querySelector("nav button"))}
+function rowEmpty(t){return `<tr><td colspan="${t}" class="empty">No matching stack found.</td></tr>`}
+function renderPriorityPreview(){
+  let a=rows.slice().sort((x,y)=>dateSort(dateVal(x))-dateSort(dateVal(y)));
+  const wheat=a.filter(r=>!isRice(r)).slice(0,5), rice=a.filter(isRice).slice(0,5);
+  const days=r=>{let d=dateSort(dateVal(r));return d===Infinity?"":Math.max(0,Math.floor((Date.now()-d)/86400000))};
+  const make=(arr)=>arr.length?arr.map((r,i)=>`<tr><td><b>${i+1}</b></td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${days(r)}</td></tr>`).join(""):rowEmpty(6);
+  document.getElementById("priorityWheatPreview").innerHTML=make(wheat);
+  document.getElementById("priorityRicePreview").innerHTML=make(rice);
+}
+
+function renderPriority(){
+ let a=rows.slice().sort((x,y)=>dateSort(dateVal(x))-dateSort(dateVal(y)));
+ if(priorityFilter==="wheat")a=a.filter(r=>!isRice(r)); if(priorityFilter==="rice")a=a.filter(isRice);
+ document.getElementById("priorityBody").innerHTML=a.length?a.map((r,i)=>`<tr><td><b>${i+1}</b></td><td>${esc(val(r,"Sr No.","Sr No"))}</td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(commodity(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${esc(val(r,"Cat","Category"))}</td><td>${esc(val(r,"Remarks"))}</td></tr>`).join(""):rowEmpty(9)
+}
+function renderUnder(){
+ let a=rows.filter(r=>isTrue(val(r,"UnderCover_Flag","Under Cover","UnderCover")));
+ document.getElementById("underBody").innerHTML=a.length?a.map(r=>`<tr><td>${esc(val(r,"Sr No.","Sr No"))}</td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(commodity(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td><span class="badge warn">UNDER COVER</span></td><td>${esc(val(r,"Remarks"))}</td></tr>`).join(""):rowEmpty(8)
+}
+function renderFum(){
+ let a=rows.filter(r=>isTrue(val(r,"FumigationDue_>30D_Flag","Fumigation Due","FumigationDue")));
+ document.getElementById("fumBody").innerHTML=a.length?a.map(r=>`<tr><td>${esc(val(r,"Sr No.","Sr No"))}</td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(commodity(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${esc(val(r,"LAST FUMIGATION","Last Fumigation"))}</td><td>${esc(val(r,"Fumigation Date"))}</td><td><span class="badge danger">DUE &gt;30 DAYS</span></td></tr>`).join(""):rowEmpty(9)
+}
+function renderSearch(){
+ let q=(document.getElementById("q")?.value||"").toLowerCase().trim(),a=rows.filter(r=>!q||[val(r,"Stack No."),val(r,"Shed No."),commodity(r),dateVal(r)].join(" ").toLowerCase().includes(q));
+ document.getElementById("searchBody").innerHTML=a.length?a.map(r=>`<tr><td>${esc(val(r,"Sr No.","Sr No"))}</td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(commodity(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${esc(val(r,"Status"))}</td><td>${esc(val(r,"LAST FUMIGATION","Last Fumigation"))}</td></tr>`).join(""):rowEmpty(8)
+}
+setInterval(()=>document.getElementById("clock").textContent=new Date().toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"medium"}),1000);
+load();setInterval(load,60000);
+</script>
+</body></html>
