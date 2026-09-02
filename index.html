@@ -3,94 +3,171 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Status Godown No. 9, 14, 18 and 20</title>
+<title>Warehouse Quality Control</title>
 <style>
-*{box-sizing:border-box}body{margin:0;background:#f5f7fa;color:#14213d;font-family:Arial,Helvetica,sans-serif}.topbar{height:68px;background:linear-gradient(90deg,#061b46,#0d3271);color:#fff;display:flex;align-items:center;padding:8px 18px;gap:18px}.logo{font-size:38px}.headtitle{font-weight:800;font-size:28px;flex:1;text-align:center;letter-spacing:.3px}.updated{font-weight:700;font-size:14px;white-space:nowrap}.updated button{background:none;border:0;color:white;font-size:25px;cursor:pointer}.connection{margin:10px 1%;padding:7px 12px;background:#e9f7ed;border:1px solid #b7ddc1;border-radius:6px;font-size:12px}.connection.error{background:#ffe9e9;color:#a40000;border-color:#efaaaa}.top-grid{display:grid;grid-template-columns:repeat(5,1fr) 240px;gap:12px;padding:4px 1% 10px}.metric{background:white;border:1px solid #b9c6d8;border-radius:9px;text-align:center;padding:11px 6px;min-height:137px;box-shadow:0 1px 3px #0001}.metric .label{font-weight:800;font-size:16px;min-height:38px}.metric .big{font-size:47px;font-weight:800;line-height:1.05;margin:4px}.metric.blue{color:#174ea6}.metric.green{color:#258b36;border-color:#70a879}.metric.purple{color:#643b92}.metric.red{color:#b20d17;border-color:#c85b62}.metric.orange{color:#dc7a00;border-color:#e0a05d}.quick{background:#0d2f69;border-radius:9px;padding:10px;color:#fff}.quick h3{text-align:center;margin:2px 0 10px;font-size:16px}.q{display:block;color:white;text-decoration:none;font-weight:800;text-align:center;border-radius:7px;padding:16px 6px;margin:8px 0;border:1px solid #fff8;font-size:15px}.qc{background:#ef8b00}.master{background:#2d923a}.rice{background:#2360b6}.wheat{background:#693c93}.middle-grid,.details-grid{display:grid;grid-template-columns:1.05fr 1.35fr 1.35fr;gap:12px;padding:0 1% 12px}.panel,.detail,.searchbox{background:white;border:1px solid #b9c6d8;border-radius:9px;overflow:hidden;min-height:270px}.panel h2,.detail h2,.searchbox h2{margin:0;background:#0d2f69;color:#fff;padding:10px;text-align:center;font-size:16px}.summary table,.detail table{width:100%;border-collapse:collapse}.summary th,.summary td,.detail th,.detail td{padding:10px 9px;border:1px solid #d5dbe4;font-size:13px}.summary th{background:#e9eef6}.summary td:nth-child(2),.summary td:nth-child(3){text-align:center}.totalrow{font-weight:800;background:#f1f3f6}.donut{display:flex;flex-direction:column;align-items:center}.donut-chart{width:185px;height:185px;border-radius:50%;margin:14px 0 8px;background:conic-gradient(#f28c00 0 31%,#a7a7a7 31% 82%,#c41620 82% 100%);display:grid;place-items:center}.donut-chart>div{width:93px;height:93px;border-radius:50%;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center}.donut-chart b{font-size:22px}.donut-chart small{font-weight:800}.statusdonut{background:conic-gradient(#3475c4 0 71%,#c94646 71% 82%,#86a63d 82% 100%)}.legend{display:flex;gap:13px;font-size:12px;flex-wrap:wrap;justify-content:center;padding:6px}.details-grid{align-items:stretch}.detail{min-height:340px}.redpanel h2{background:#c10d18}.orangepanel h2{background:#ec8500}.tablewrap{overflow:auto;max-height:260px}.detail th{background:#f1f3f8}.detail footer{text-align:center;padding:11px;background:#fff0f0;color:#b00;font-size:14px}.orangepanel footer{background:#fff5e8}.searchbox{padding-bottom:5px}.searchbox h2{margin-bottom:8px}.searchbox input{margin:0 12px 8px;width:calc(100% - 24px);padding:11px;border:1px solid #c9d1dc;border-radius:6px}.result{display:flex;justify-content:space-between;padding:8px 13px;border-top:1px solid #e1e5ea;font-size:13px}.result span{font-weight:700}.guide{margin:0 1% 8px;background:white;border:1px solid #b9c6d8;border-radius:8px;display:flex;align-items:center;justify-content:space-around;text-align:center;overflow:hidden}.guide>strong{background:#0d2f69;color:white;padding:16px 35px}.guide span{font-weight:800;font-size:13px;padding:7px}.guide small{font-weight:400;color:#333}.note{margin:0 1% 15px;padding:10px 14px;font-size:13px;background:white;border:1px solid #d2d8e0;border-radius:7px}.note b:last-child{float:right}@media(max-width:1100px){.top-grid{grid-template-columns:repeat(3,1fr)}.quick{grid-column:span 3}.middle-grid,.details-grid{grid-template-columns:1fr 1fr}.searchbox{grid-column:span 2}}@media(max-width:650px){.headtitle{font-size:17px}.updated{font-size:11px}.topbar{height:auto}.top-grid,.middle-grid,.details-grid{grid-template-columns:1fr}.quick,.searchbox{grid-column:auto}.guide{flex-wrap:wrap}.guide>strong{width:100%}.note b:last-child{float:none;display:block;margin-top:8px}}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f3f6fa;color:#172b4d}
+header{background:#082b55;color:#fff;padding:18px 22px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}
+header h1{margin:0;font-size:22px}header small{opacity:.8}
+nav{background:#fff;padding:10px 15px;display:flex;gap:8px;overflow:auto;box-shadow:0 2px 8px #0001;position:sticky;top:0;z-index:5}
+nav button{border:0;background:#eef3f8;color:#12345b;padding:10px 14px;border-radius:6px;font-weight:700;white-space:nowrap;cursor:pointer}nav button.active{background:#1476df;color:white}
+main{max-width:1450px;margin:auto;padding:18px}
+.status{background:#fff;border-left:5px solid #1476df;padding:12px 15px;border-radius:7px;margin-bottom:16px;box-shadow:0 2px 6px #0001}
+.cards{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:18px}
+.card{background:#fff;border-radius:9px;padding:16px;box-shadow:0 2px 7px #0001}.card b{font-size:27px;display:block;margin-top:5px}.card span{font-size:12px;color:#667}
+section{background:#fff;border-radius:9px;padding:18px;margin-bottom:18px;box-shadow:0 2px 7px #0001}section h2{margin:0 0 5px;font-size:19px}section p{margin:0 0 15px;color:#6a788b;font-size:13px}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolbar input,.toolbar select{padding:10px;border:1px solid #ccd6e2;border-radius:6px;min-width:180px}
+.tablewrap{overflow:auto;max-height:520px;border:1px solid #e2e8ef;border-radius:7px}table{width:100%;border-collapse:collapse;min-width:900px;font-size:13px}th{background:#0b315d;color:#fff;padding:10px;text-align:left;position:sticky;top:0}td{padding:9px;border-bottom:1px solid #e9edf2}tr:hover td{background:#f7faff}
+.badge{display:inline-block;padding:4px 7px;border-radius:12px;background:#eef3f8;font-weight:700}.warn{background:#fff1d6}.danger{background:#ffe0e0}
+.hide{display:none}.empty{text-align:center;padding:25px;color:#788699}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr)}header h1{font-size:18px}}@media(max-width:500px){.cards{grid-template-columns:1fr 1fr}main{padding:10px}.card{padding:12px}}
+@media(max-width:800px){.priority-preview-grid{grid-template-columns:1fr!important}} .priority-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:800px){.priority-preview-grid{grid-template-columns:1fr!important}} .priority-preview-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 </style>
 </head>
 <body>
-<header class="topbar">
-  <div class="logo">🏭</div>
-  <div class="headtitle">STATUS GODOWN NO. 9, 14, 18 AND 20</div>
-  <div class="updated">Last Updated : <span id="updated">--</span> <button onclick="loadData()" title="Refresh">↻</button></div>
-</header>
-
+<header><div><h1>WAREHOUSE QUALITY CONTROL</h1><small>Live Stock • Priority • Treatment Monitoring</small></div><div id="clock">--</div></header>
+<nav>
+<button class="active" onclick="show('dashboard',this)">Dashboard</button>
+<button onclick="show('priority',this)">Priority View</button>
+<button onclick="show('under',this)">Under Cover</button>
+<button onclick="show('fum',this)">Fumigation Due</button>
+<button onclick="show('search',this)">Search Stack</button>
+</nav>
 <main>
-  <div id="connection" class="connection">Connecting to Google Sheet…</div>
+<div class="status" id="status">Connecting to Google Sheet…</div>
+<div class="cards">
+<div class="card">Total Stock Stacks<b id="total">—</b></div>
+<div class="card">Wheat<b id="wheat">—</b></div>
+<div class="card">Rice / FRK RRA<b id="rice">—</b></div>
+<div class="card">Under Cover<b id="underCount">—</b></div>
+<div class="card">Fumigation Due &gt;30D<b id="fumCount">—</b></div>
+</div>
 
-  <section class="top-grid">
-    <div class="metric blue"><div class="label">TOTAL STACK</div><div class="big" id="total">0</div><div>All Stacks</div></div>
-    <div class="metric green"><div class="label">FULL STACK</div><div class="big" id="full">0</div><div>Full Stacks</div></div>
-    <div class="metric purple"><div class="label">EMPTY STACK</div><div class="big" id="empty">0</div><div>Empty Stacks</div></div>
-    <div class="metric red"><div class="label">INFESTED /<br>UNDER COVER</div><div class="big" id="attention">0</div><div>Requires Attention</div></div>
-    <div class="metric orange"><div class="label">FUMIGATION DUE</div><div class="big" id="fumDue">0</div><div>Due for Fumigation</div></div>
+<section id="dashboard">
+<h2>Quick Access</h2><p>Live warehouse quality-control views.</p>
+<div class="toolbar">
+<button onclick="showById('priority')">⚑ Priority View</button>
+<button onclick="showById('under')">▣ Under Cover Details</button>
+<button onclick="showById('fum')">⚠ Fumigation Due Details</button>
+<button onclick="showById('search')">🔎 Search Stack</button>
+</div>
 
-    <aside class="quick">
-      <h3>QUICK NAVIGATION</h3>
-      <a id="qcLink" target="_blank" class="q qc">☷ &nbsp; QC DETAILS</a>
-      <a id="masterLink" target="_blank" class="q master">▤ &nbsp; MASTER</a>
-      <a id="riceLink" target="_blank" class="q rice">🌾 &nbsp; RICE PRIORITY</a>
-      <a id="wheatLink" target="_blank" class="q wheat">🌾 &nbsp; WHEAT PRIORITY</a>
-    </aside>
-  </section>
+<div id="priorityHome" style="display:block!important;background:#fff;border:2px solid #1476df;border-radius:14px;padding:16px;margin-top:18px;box-shadow:0 3px 10px #0002">
+<h2 style="margin:0 0 6px">⚑ Priority View — FIFO</h2>
+<p style="margin:0 0 14px;color:#667">Oldest receipt first • Wheat and Rice / FRK RRA separate • Empty/zero quantity stacks excluded.</p>
+<div class="priority-preview-grid">
+<div><h3 style="margin:0 0 8px;font-size:15px">🌾 Wheat Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityWheatHome"></tbody></table></div></div>
+<div><h3 style="margin:0 0 8px;font-size:15px">🍚 Rice / FRK RRA Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityRiceHome"></tbody></table></div></div>
+</div>
+<div style="margin-top:12px"><button onclick="showById('priority')">View Full Priority View →</button></div>
+</div>
+</section>
 
-  <section class="middle-grid">
-    <div class="summary panel">
-      <h2>STACK TYPE SUMMARY</h2>
-      <table><thead><tr><th>STACK TYPE</th><th>COUNT</th><th>%</th></tr></thead>
-      <tbody>
-        <tr><td>🟠 Wheat</td><td id="wheatCount">0</td><td id="wheatPct">0%</td></tr>
-        <tr><td>⚪ Rice (FRK + RRA)</td><td id="riceCount">0</td><td id="ricePct">0%</td></tr>
-        <tr><td>🔴 Empty Stack</td><td id="emptyCount">0</td><td id="emptyPct">0%</td></tr>
-        <tr class="totalrow"><td>TOTAL</td><td id="sumCount">0</td><td>100%</td></tr>
-      </tbody></table>
-    </div>
+<section id="priorityPreview">
+<h2>Priority View — FIFO</h2><p>Oldest receipt first • Wheat and Rice / FRK RRA kept separate.</p>
+<div class="priority-preview-grid">
+<div><h3 style="margin:0 0 8px;font-size:15px">🌾 Wheat Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityWheatPreview"></tbody></table></div></div>
+<div><h3 style="margin:0 0 8px;font-size:15px">🌾 Rice / FRK RRA Priority</h3><div class="tablewrap"><table><thead><tr><th>Priority</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Qty (MT)</th><th>Days</th></tr></thead><tbody id="priorityRicePreview"></tbody></table></div></div>
+</div>
+<div class="toolbar" style="margin-top:12px;margin-bottom:0"><button onclick="showById('priority')">View Full Priority View →</button></div>
+</section>
 
-    <div class="donut panel"><h2>STACK TYPE</h2><div class="donut-chart" id="stackDonut"><div><b id="donutTotal">0</b><small>TOTAL</small></div></div><div class="legend"><span>🟠 Wheat</span><span>⚪ Rice</span><span>🔴 Empty</span></div></div>
+<section id="priority" class="hide">
+<h2>Priority View — FIFO</h2><p>Oldest valid receipt date first; empty/zero-quantity stacks excluded.</p>
+<div class="toolbar"><button onclick="priorityFilter='all';renderPriority()">All</button><button onclick="priorityFilter='wheat';renderPriority()">Wheat</button><button onclick="priorityFilter='rice';renderPriority()">Rice / FRK RRA</button></div>
+<div class="tablewrap"><table><thead><tr><th>Priority</th><th>Sr No.</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Commodity / Crop Year</th><th>Qty (MT)</th><th>Cat</th><th>Remarks</th></tr></thead><tbody id="priorityBody"></tbody></table></div>
+</section>
 
-    <div class="donut panel"><h2>INFESTATION STATUS</h2><div class="donut-chart statusdonut" id="statusDonut"><div><b id="clearCount">0</b><small>CLEAR</small></div></div><div class="legend"><span>🔵 Clear</span><span>🔴 Infested / Under Cover</span><span>🟢 Fumigation Due</span></div></div>
-  </section>
+<section id="under" class="hide">
+<h2>Currently Under Cover</h2><p>Details are taken from the Master Stock UnderCover_Flag field.</p>
+<div class="tablewrap"><table><thead><tr><th>Sr No.</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Commodity</th><th>Qty (MT)</th><th>Under Cover</th><th>Remarks</th></tr></thead><tbody id="underBody"></tbody></table></div>
+</section>
 
-  <section class="details-grid">
-    <div class="detail redpanel">
-      <h2>🐞 &nbsp; INFESTED / UNDER COVER DETAILS</h2>
-      <div class="tablewrap"><table><thead><tr><th>Stack No.</th><th>Commodity</th><th>Fumigation Date</th><th>Days</th></tr></thead><tbody id="attentionBody"></tbody></table></div>
-      <footer>Total Infested / Under Cover : <b id="attentionTotal">0</b></footer>
-    </div>
+<section id="fum" class="hide">
+<h2>Fumigation Due — &gt;30 Days</h2><p>Stacks flagged by the Master Stock FumigationDue_&gt;30D_Flag field.</p>
+<div class="tablewrap"><table><thead><tr><th>Sr No.</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Commodity</th><th>Qty (MT)</th><th>Last Fumigation</th><th>Fumigation Date</th><th>Remarks</th></tr></thead><tbody id="fumBody"></tbody></table></div>
+</section>
 
-    <div class="detail orangepanel">
-      <h2>🧯 &nbsp; FUMIGATION DUE DETAILS</h2>
-      <div class="tablewrap"><table><thead><tr><th>Stack No.</th><th>Commodity</th><th>Last Fumigation</th><th>Days</th><th>Status</th></tr></thead><tbody id="dueBody"></tbody></table></div>
-      <footer>Total Fumigation Due : <b id="dueTotal">0</b></footer>
-    </div>
-  </section>
-
-  <section class="guide"><strong>STATUS GUIDE</strong><span>🟢 NORMAL<br><small>Fumigation Days &lt; 25</small></span><span>🟠 WARNING<br><small>Fumigation Days 25 - 30</small></span><span>🔴 DUE<br><small>Fumigation Days &gt; 30</small></span><span>🟣 ATTENTION<br><small>Infested / Under Cover</small></span></section>
-  <div class="note">ⓘ <b>Note :</b> All days are calculated from Last Fumigation Date using TODAY() &nbsp;&nbsp;&nbsp; <b>Keep Stack Safe, Keep Quality Safe!</b></div>
+<section id="search" class="hide">
+<h2>Search Stack</h2><p>Search the live Master Stock data by stack, shed, commodity or receipt date.</p>
+<div class="toolbar"><input id="q" placeholder="Enter stack / shed / commodity…" oninput="renderSearch()"></div>
+<div class="tablewrap"><table><thead><tr><th>Sr No.</th><th>Shed</th><th>Stack</th><th>Receipt Date</th><th>Commodity</th><th>Qty (MT)</th><th>Status</th><th>Last Fumigation</th></tr></thead><tbody id="searchBody"></tbody></table></div>
+</section>
 </main>
 <script>
 const SHEET_ID="1igJ0rzEp3txMDdhjwjrMB5V9BkJcyjt74g1xWh3YSHo";
 const SHEET_NAME="Master Stock";
-const REFRESH_MS=30000;
-const masterUrl=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/edit`;
-document.getElementById("masterLink").href=masterUrl;
-document.getElementById("qcLink").href=masterUrl;
-document.getElementById("riceLink").href=masterUrl;
-document.getElementById("wheatLink").href=masterUrl;
-let data=[],headers=[];
-const n=x=>String(x??"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
-function find(names){const H=headers.map(n);for(const x of names){const i=H.indexOf(n(x));if(i>=0)return i}for(const x of names){const i=H.findIndex(h=>h.includes(n(x)));if(i>=0)return i}return -1}
-function val(r,i){return i>=0?String(r[i]??"").trim():""}
-function parseDate(v){if(!v)return null;if(/^\d{1,2}\.\d{1,2}\.\d{2,4}$/.test(v)){let [d,m,y]=v.split(".").map(Number);if(y<100)y+=2000;return new Date(y,m-1,d)}const d=new Date(v);return isNaN(d)?null:d}
-function days(v){const d=parseDate(v);return d?Math.max(0,Math.floor((Date.now()-d.getTime())/86400000)):""}
-function loadJSONP(){return new Promise((resolve,reject)=>{const cb="googleSheetCallback_"+Date.now();const s=document.createElement("script");let done=false;const cleanup=()=>{try{delete window[cb]}catch(e){window[cb]=undefined}s.remove()};const timer=setTimeout(()=>{if(!done){done=true;cleanup();reject(Error("timeout"))}},12000);window[cb]=obj=>{if(done)return;done=true;clearTimeout(timer);cleanup();resolve(obj)};s.onerror=()=>{if(!done){done=true;clearTimeout(timer);cleanup();reject(Error("request failed"))}};s.src=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?sheet=${encodeURIComponent(SHEET_NAME)}&tqx=out:json;responseHandler:${cb}&tq=${encodeURIComponent("select *")}&_=${Date.now()}`;document.head.appendChild(s)})}
-function makeRecords(j){headers=(j.table?.cols||[]).map(c=>c.label||c.id||"");const rows=(j.table?.rows||[]).map(x=>(x.c||[]).map(c=>c?(c.f??c.v??""):""));const ix={shed:find(["Shed No.","Shed"]),stack:find(["Stack No.","Stack"]),comm:find(["Commodity / Crop Year","Commodity","Crop Year"]),receipt:find(["Receipt Date","RDate of receipt","Date of Receipt"]),status:find(["Status","QC Status"]),fum:find(["Fumigation Date"]),last:find(["Last Fumigation Date","Last Fumigation"]),remarks:find(["QC Remarks","Remarks"]),cover:find(["UnderCover_Flag"]),due:find(["DegassingDue_Flag"])};return rows.filter(r=>r.some(x=>String(x).trim()!=="")).map(r=>{const st=val(r,ix.status),rm=val(r,ix.remarks),fum=val(r,ix.fum),last=val(r,ix.last)||fum,dy=days(last);const cover=fum!=="";const inf=fum!=="";const due=/due|yes|true/.test(n(val(r,ix.due)))||/due/.test(n(st))||(dy!==""&&dy>30);const empty=/empty/.test(n(st))||/empty/.test(n(rm));return{shed:val(r,ix.shed),stack:val(r,ix.stack),comm:val(r,ix.comm),receipt:val(r,ix.receipt),status:st,fum:val(r,ix.fum),last,days:dy,remarks:rm,cover,inf,due,empty}})}
-async function loadData(){const box=document.getElementById("connection");box.textContent="Connecting to Google Sheet…";try{const json=await loadJSONP();if(json.status==="error")throw Error((json.errors&&json.errors[0]&&json.errors[0].message)||"Google Sheet error");data=makeRecords(json);const now=new Date();document.getElementById("updated").textContent=now.toLocaleDateString("en-GB",{day:"2-digit",month:"2-digit",year:"2-digit"})+" | "+now.toLocaleTimeString("en-IN",{hour:"2-digit",minute:"2-digit"});box.textContent=`● LIVE — Master Stock connected • ${data.length} rows`;box.className="connection";render()}catch(e){box.textContent="Google Sheet connection failed. Confirm Master Stock is Published to web and the tab name is exactly “Master Stock”.";box.className="connection error";console.error(e)}}
-function esc(x){return String(x??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}
-function pct(x,t){return t?((x/t)*100).toFixed(2)+"%":"0%"}
-function render(){const total=data.length,empty=data.filter(x=>x.empty||(!x.comm&&!x.stack)).length,wheat=data.filter(x=>/wheat/.test(n(x.comm))).length,rice=data.filter(x=>/rice|frk|rra/.test(n(x.comm))&&!/wheat/.test(n(x.comm))).length,att=data.filter(x=>x.inf||x.cover),due=data.filter(x=>x.due&&!x.inf&&!x.cover),full=Math.max(0,total-empty);document.getElementById("total").textContent=total;document.getElementById("full").textContent=full;document.getElementById("empty").textContent=empty;document.getElementById("attention").textContent=att.length;document.getElementById("fumDue").textContent=due.length;document.getElementById("wheatCount").textContent=wheat;document.getElementById("riceCount").textContent=rice;document.getElementById("emptyCount").textContent=empty;document.getElementById("wheatPct").textContent=pct(wheat,total);document.getElementById("ricePct").textContent=pct(rice,total);document.getElementById("emptyPct").textContent=pct(empty,total);document.getElementById("sumCount").textContent=total;document.getElementById("donutTotal").textContent=total;document.getElementById("clearCount").textContent=Math.max(0,total-att.length-due.length);document.getElementById("attentionTotal").textContent=att.length;document.getElementById("dueTotal").textContent=due.length;document.getElementById("attentionBody").innerHTML=att.length?att.map(x=>`<tr><td>${esc(x.stack)}</td><td>${esc(x.comm)}</td><td>${esc(x.fum)}</td><td>${esc(x.days)}</td></tr>`).join(""):`<tr><td colspan="4">No stacks found</td></tr>`;document.getElementById("dueBody").innerHTML=due.length?due.map(x=>`<tr><td>${esc(x.stack)}</td><td>${esc(x.comm)}</td><td>${esc(x.last)}</td><td>${esc(x.days)}</td><td><b>DUE (&gt;30 Days)</b></td></tr>`).join(""):`<tr><td colspan="5">No stacks found</td></tr>`}
-loadData();setInterval(loadData,REFRESH_MS);
+let rows=[],priorityFilter="all";
 
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+function val(r,...names){for(const n of names){if(r[n]!==undefined&&r[n]!==null&&String(r[n]).trim()!=="")return String(r[n]).trim()}return ""}
+function num(x){let n=parseFloat(String(x).replace(/,/g,""));return isNaN(n)?0:n}
+function isTrue(x){return /^(true|yes|y|1|under\s*cover|due|required)$/i.test(String(x).trim())}
+function commodity(r){return val(r,"Commodity / Crop Year","Commodity/Crop Year","Commodity","Crop Year")}
+function isRice(r){return /rice|frk|rra/i.test(commodity(r))}
+function dateVal(r){return val(r,"Receipt Date","RDate of Receipt","RDate")}
+function dateSort(x){let s=String(x).trim(); if(!s)return Infinity; let d=new Date(s); if(!isNaN(d))return d.getTime(); let m=s.match(/(\\d{1,2})[.\\/-](\\d{1,2})[.\\/-](\\d{2,4})/); if(m){let y=+m[3];if(y<100)y+=2000;return new Date(y,+m[2]-1,+m[1]).getTime()}return Infinity}
+
+async function load(){
+ try{
+  const u=`https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+  const t=await fetch(u,{cache:"no-store"}).then(r=>r.text());
+  const m=t.match(/google\\.visualization\\.Query\\.setResponse\\((.*)\\);?$/s);
+  if(!m)throw Error("Google Sheet response not readable");
+  const j=JSON.parse(m[1]), cols=j.table.cols.map(c=>(c.label||"").trim());
+  rows=j.table.rows.map(rr=>{let o={};cols.forEach((c,i)=>o[c]=rr.c[i]?rr.c[i].f??rr.c[i].v??"": "");return o})
+    .filter(r=>val(r,"Stack No.","Stack No") && num(val(r,"Qty (MT)","Qty"))>0);
+  document.getElementById("status").textContent=`✓ Live data connected • ${rows.length} active stacks • Last refresh ${new Date().toLocaleTimeString()}`;
+  updateCounts();renderPriority();renderPriorityHome();renderUnder();renderFum();renderSearch();
+ }catch(e){
+  document.getElementById("status").textContent="⚠ Live data could not be read. Check that the Master Stock sheet is published/accessible to everyone.";
+  console.error(e);
+ }
+}
+function updateCounts(){
+ document.getElementById("total").textContent=rows.length;
+ document.getElementById("wheat").textContent=rows.filter(r=>!isRice(r)).length;
+ document.getElementById("rice").textContent=rows.filter(isRice).length;
+ document.getElementById("underCount").textContent=rows.filter(r=>isTrue(val(r,"UnderCover_Flag","Under Cover","UnderCover"))).length;
+ document.getElementById("fumCount").textContent=rows.filter(r=>isTrue(val(r,"FumigationDue_>30D_Flag","Fumigation Due","FumigationDue"))).length;
+}
+function show(id,b){document.querySelectorAll("main section").forEach(s=>s.classList.add("hide"));document.getElementById(id).classList.remove("hide");document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));b.classList.add("active")}
+function showById(id){let b=[...document.querySelectorAll("nav button")].find(x=>x.textContent.toLowerCase().includes(id==="under"?"under":id==="fum"?"fumigation":id==="priority"?"priority":"search"));show(id,b||document.querySelector("nav button"))}
+function rowEmpty(t){return `<tr><td colspan="${t}" class="empty">No matching stack found.</td></tr>`}
+function renderPriorityPreview(){
+  let a=rows.slice().sort((x,y)=>dateSort(dateVal(x))-dateSort(dateVal(y)));
+  const wheat=a.filter(r=>!isRice(r)).slice(0,5), rice=a.filter(isRice).slice(0,5);
+  const days=r=>{let d=dateSort(dateVal(r));return d===Infinity?"":Math.max(0,Math.floor((Date.now()-d)/86400000))};
+  const make=(arr)=>arr.length?arr.map((r,i)=>`<tr><td><b>${i+1}</b></td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${days(r)}</td></tr>`).join(""):rowEmpty(6);
+  document.getElementById("priorityWheatPreview").innerHTML=make(wheat);
+  document.getElementById("priorityRicePreview").innerHTML=make(rice);
+}
+
+function renderPriorityHome(){
+  let a=rows.slice().sort((x,y)=>dateSort(dateVal(x))-dateSort(dateVal(y)));
+  const wheat=a.filter(r=>!isRice(r)).slice(0,5), rice=a.filter(isRice).slice(0,5);
+  const days=r=>{let d=dateSort(dateVal(r));return d===Infinity?"":Math.max(0,Math.floor((Date.now()-d)/86400000))};
+  const make=(arr)=>arr.length?arr.map((r,i)=>`<tr><td><b>${i+1}</b></td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${days(r)}</td></tr>`).join(""):`<tr><td colspan="6" class="empty">No priority stack found.</td></tr>`;
+  document.getElementById("priorityWheatHome").innerHTML=make(wheat);
+  document.getElementById("priorityRiceHome").innerHTML=make(rice);
+}
+function renderPriority(){
+ let a=rows.slice().sort((x,y)=>dateSort(dateVal(x))-dateSort(dateVal(y)));
+ if(priorityFilter==="wheat")a=a.filter(r=>!isRice(r)); if(priorityFilter==="rice")a=a.filter(isRice);
+ document.getElementById("priorityBody").innerHTML=a.length?a.map((r,i)=>`<tr><td><b>${i+1}</b></td><td>${esc(val(r,"Sr No.","Sr No"))}</td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(commodity(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${esc(val(r,"Cat","Category"))}</td><td>${esc(val(r,"Remarks"))}</td></tr>`).join(""):rowEmpty(9)
+}
+function renderUnder(){
+ let a=rows.filter(r=>isTrue(val(r,"UnderCover_Flag","Under Cover","UnderCover")));
+ document.getElementById("underBody").innerHTML=a.length?a.map(r=>`<tr><td>${esc(val(r,"Sr No.","Sr No"))}</td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(commodity(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td><span class="badge warn">UNDER COVER</span></td><td>${esc(val(r,"Remarks"))}</td></tr>`).join(""):rowEmpty(8)
+}
+function renderFum(){
+ let a=rows.filter(r=>isTrue(val(r,"FumigationDue_>30D_Flag","Fumigation Due","FumigationDue")));
+ document.getElementById("fumBody").innerHTML=a.length?a.map(r=>`<tr><td>${esc(val(r,"Sr No.","Sr No"))}</td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(commodity(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${esc(val(r,"LAST FUMIGATION","Last Fumigation"))}</td><td>${esc(val(r,"Fumigation Date"))}</td><td><span class="badge danger">DUE &gt;30 DAYS</span></td></tr>`).join(""):rowEmpty(9)
+}
+function renderSearch(){
+ let q=(document.getElementById("q")?.value||"").toLowerCase().trim(),a=rows.filter(r=>!q||[val(r,"Stack No."),val(r,"Shed No."),commodity(r),dateVal(r)].join(" ").toLowerCase().includes(q));
+ document.getElementById("searchBody").innerHTML=a.length?a.map(r=>`<tr><td>${esc(val(r,"Sr No.","Sr No"))}</td><td>${esc(val(r,"Shed No.","Shed No"))}</td><td><b>${esc(val(r,"Stack No.","Stack No"))}</b></td><td>${esc(dateVal(r))}</td><td>${esc(commodity(r))}</td><td>${esc(val(r,"Qty (MT)","Qty"))}</td><td>${esc(val(r,"Status"))}</td><td>${esc(val(r,"LAST FUMIGATION","Last Fumigation"))}</td></tr>`).join(""):rowEmpty(8)
+}
+setInterval(()=>document.getElementById("clock").textContent=new Date().toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"medium"}),1000);
+load();setInterval(load,60000);
 </script>
-</body>
-</html>
+</body></html>
