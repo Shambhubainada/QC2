@@ -677,6 +677,30 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
 .saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{font-weight:1000!important;font-size:15px!important;line-height:1.35!important;display:inline-block!important;-webkit-text-stroke:.35px currentColor!important;text-shadow:1px 1px 0 #fff,2px 2px 0 #9a3412,3px 3px 0 #7c2d12,0 0 8px currentColor!important;animation:actualSavedDiffBlink .65s ease-in-out infinite alternate!important;transform-origin:center!important}
 @keyframes actualSavedDiffBlink{from{transform:scale(1);filter:brightness(.88);opacity:.82;text-shadow:1px 1px 0 #fff,2px 2px 0 #9a3412,3px 3px 0 #7c2d12,0 0 4px currentColor}to{transform:scale(1.08);filter:brightness(1.2);opacity:1;text-shadow:1px 1px 0 #fff,2px 2px 0 #9a3412,3px 3px 0 #7c2d12,0 0 12px currentColor}}
 </style>
+
+<style id="saved-moisture-difference-bold-highlight-no-3d">
+/* Difference: keep bold, highlighted and gently blinking; remove all 3D depth/shadows. */
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3){
+  border:2px solid #d97706!important;
+  background:#fff4cc!important;
+  box-shadow:none!important;
+  border-radius:8px!important;
+}
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) span{
+  color:#92400e!important;font-weight:1000!important;text-shadow:none!important;
+}
+.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{
+  color:#7c2d12!important;font-weight:1000!important;font-size:15px!important;
+  -webkit-text-stroke:0!important;text-shadow:none!important;
+  animation:diffBoldHighlightBlink .9s ease-in-out infinite alternate!important;
+  transform:none!important;filter:none!important;
+}
+@keyframes diffBoldHighlightBlink{
+  from{opacity:.78;background:transparent;text-shadow:none;transform:none;filter:none}
+  to{opacity:1;background:transparent;text-shadow:none;transform:none;filter:brightness(1.08)}
+}
+@media(prefers-reduced-motion:reduce){.saved-moisture-focus .mo-saved-rmc-strip>div:nth-child(3) b{animation:none!important;opacity:1!important}}
+</style>
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
