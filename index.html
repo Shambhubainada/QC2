@@ -2271,6 +2271,7 @@ document.addEventListener('DOMContentLoaded',function(){
       <div class="chem-note" style="display:none!important">हर chemical का अलग folder है। Folder खोलने पर उसी chemical का अलग register, month-wise report, View, PDF और Excel option मिलेगा.</div>
     </div>`;
   }
+  function alpConsumptionFromBags(bags){return Math.round(chemNum(bags)*0.0004714*1000)/1000;}
   function alpAutoGroups(){
     const a=rows.filter(r=>qty(r)>0 && underFlag(r));
     const groups={};
@@ -2278,27 +2279,28 @@ document.addEventListener('DOMContentLoaded',function(){
       const d=val(r,'Fumigation Date','FumigationDate','Cover Date','Under Cover Date') || '';
       if(!d)return;
       const key=String(d);
-      if(!groups[key])groups[key]={date:key,stacks:[],wheatStacks:[],riceStacks:[],mt:0,wheat:0,rice:0,wheatMt:0,riceMt:0};
+      if(!groups[key])groups[key]={date:key,stacks:[],wheatStacks:[],riceStacks:[],mt:0,bags:0,wheat:0,rice:0,wheatMt:0,riceMt:0};
       const g=groups[key], st=String(stack(r)||'').trim();
-      const q=qty(r);
-      if(st){g.stacks.push(st); const so={stack:st,mt:q}; if(isWheat(r))g.wheatStacks.push(so); else if(isRice(r))g.riceStacks.push(so);} g.mt+=q;
+      const q=qty(r), bagCount=chemNum(val(r,'Bags','Bags (Nos.)','No. of Bags'));
+      if(st){g.stacks.push(st); const so={stack:st,mt:q,bags:bagCount}; if(isWheat(r))g.wheatStacks.push(so); else if(isRice(r))g.riceStacks.push(so);} g.mt+=q; g.bags+=bagCount;
       if(isWheat(r)){g.wheat++;g.wheatMt+=q;} else if(isRice(r)){g.rice++;g.riceMt+=q;}
     });
     let overrides={}; try{overrides=JSON.parse(localStorage.getItem('shambhuALPOverridesV1')||'{}')}catch(e){overrides={}};
     // Include locked snapshots even when their Under Cover rows no longer exist.
     Object.keys(overrides).forEach(k=>{
       const ov=overrides[k]; if(!ov || !ov.locked || groups[k])return;
-      groups[k]={date:k,stacks:[],wheatStacks:[],riceStacks:[],mt:0,wheat:0,rice:0,wheatMt:0,riceMt:0};
+      groups[k]={date:k,stacks:[],wheatStacks:[],riceStacks:[],mt:0,bags:chemNum(ov.bags),wheat:0,rice:0,wheatMt:0,riceMt:0};
     });
     return Object.values(groups).map(g=>{
       const ov=overrides[g.date];
       const locked=!!ov?.locked;
       if(locked){
-        return {...g,...ov,wheatStacks:Array.isArray(ov.wheatStacks)?ov.wheatStacks:g.wheatStacks,riceStacks:Array.isArray(ov.riceStacks)?ov.riceStacks:g.riceStacks,stackWeights:ov.stackWeights||{},mt:chemNum(ov.mt),consumption:chemNum(ov.consumption),stackText:String(ov.stackText??''),count:Number(ov.count??0),wheat:Number(ov.wheat??0),rice:Number(ov.rice??0),wheatMt:chemNum(ov.wheatMt),riceMt:chemNum(ov.riceMt),progressive:chemNum(ov.progressive)};
+        return {...g,...ov,wheatStacks:Array.isArray(ov.wheatStacks)?ov.wheatStacks:g.wheatStacks,riceStacks:Array.isArray(ov.riceStacks)?ov.riceStacks:g.riceStacks,stackWeights:ov.stackWeights||{},mt:chemNum(ov.mt),bags:chemNum(ov.bags),consumption:alpConsumptionFromBags(ov.bags),stackText:String(ov.stackText??''),count:Number(ov.count??0),wheat:Number(ov.wheat??0),rice:Number(ov.rice??0),wheatMt:chemNum(ov.wheatMt),riceMt:chemNum(ov.riceMt),progressive:chemNum(ov.progressive)};
       }
       const mt=ov?.mt!=null?chemNum(ov.mt):g.mt;
-      const cons=ov?.consumption!=null?chemNum(ov.consumption):mt*0.009;
-      return {...g, ...(ov||{}), mt, consumption:cons, stackText:ov?.stackText!=null?ov.stackText:g.stacks.join(', '), count:g.stacks.length};
+      const bags=ov?.bags!=null?chemNum(ov.bags):g.bags;
+      const cons=alpConsumptionFromBags(bags);
+      return {...g, ...(ov||{}), mt, bags, consumption:cons, stackText:ov?.stackText!=null?ov.stackText:g.stacks.join(', '), count:g.stacks.length};
     }).sort((a,b)=>String(a.date).localeCompare(String(b.date)));
   }
   function stackWeightKey(x,o){return 'shambhuChemicalStackWeight_'+String(x.date||'')+'_'+String(o.stack||'').trim();}
@@ -2424,7 +2426,7 @@ document.addEventListener('DOMContentLoaded',function(){
     const g=alpAutoGroups().find(x=>String(x.date)===String(dateKey)); if(!g)return;
     let o={};try{o=JSON.parse(localStorage.getItem('shambhuALPOverridesV1')||'{}')}catch(e){}
     let prior=0; alpAutoGroups().forEach(z=>{if(String(z.date)<String(g.date)) prior+=chemNum(z.consumption);});
-    o[g.date]={...(o[g.date]||{}),mt:chemNum(g.mt),consumption:chemNum(g.consumption),stackText:g.stackText,wheatMt:chemNum(g.wheatMt),riceMt:chemNum(g.riceMt),wheat:Number(g.wheat||0),rice:Number(g.rice||0),count:Number(g.count||0),wheatStacks:g.wheatStacks||[],riceStacks:g.riceStacks||[],stackWeights:collectStackWeights(g),progressive:prior+chemNum(g.consumption),locked:true};
+    o[g.date]={...(o[g.date]||{}),mt:chemNum(g.mt),bags:chemNum(g.bags),consumption:alpConsumptionFromBags(g.bags),stackText:g.stackText,wheatMt:chemNum(g.wheatMt),riceMt:chemNum(g.riceMt),wheat:Number(g.wheat||0),rice:Number(g.rice||0),count:Number(g.count||0),wheatStacks:g.wheatStacks||[],riceStacks:g.riceStacks||[],stackWeights:collectStackWeights(g),progressive:prior+chemNum(g.consumption),locked:true};
     localStorage.setItem('shambhuALPOverridesV1',JSON.stringify(o));
     let ed={};try{ed=JSON.parse(localStorage.getItem('shambhuALPEditingV1')||'{}')}catch(e){} delete ed[g.date]; localStorage.setItem('shambhuALPEditingV1',JSON.stringify(ed));
     refreshALPRegister();
@@ -2433,13 +2435,14 @@ document.addEventListener('DOMContentLoaded',function(){
     const g=alpAutoGroups().find(x=>String(x.date)===String(dateKey)); if(!g)return;
     let ed={};try{ed=JSON.parse(localStorage.getItem('shambhuALPEditingV1')||'{}')}catch(e){} ed[g.date]=true;localStorage.setItem('shambhuALPEditingV1',JSON.stringify(ed));
     const mt=prompt('Total Qty (MT)',Math.round(g.mt)); if(mt===null){delete ed[g.date];localStorage.setItem('shambhuALPEditingV1',JSON.stringify(ed));return;}
-    const cons=prompt('Consumption (kg) — default Total MT × 0.009',g.consumption.toFixed(3)); if(cons===null){delete ed[g.date];localStorage.setItem('shambhuALPEditingV1',JSON.stringify(ed));return;}
+    const bags=prompt('Total Bags (Nos.) — ALP consumption = Bags × 0.0004714 kg',String(Math.round(g.bags||0))); if(bags===null){delete ed[g.date];localStorage.setItem('shambhuALPEditingV1',JSON.stringify(ed));return;}
+    const cons=alpConsumptionFromBags(bags);
     const wm=prompt('Wheat Treatment Qty (MT)',Math.round(g.wheatMt||0)); if(wm===null){delete ed[g.date];localStorage.setItem('shambhuALPEditingV1',JSON.stringify(ed));return;}
     const rm=prompt('Rice Treatment Qty (MT)',Math.round(g.riceMt||0)); if(rm===null){delete ed[g.date];localStorage.setItem('shambhuALPEditingV1',JSON.stringify(ed));return;}
     const stacks=prompt('Stack Number(s)',g.stackText); if(stacks===null){delete ed[g.date];localStorage.setItem('shambhuALPEditingV1',JSON.stringify(ed));return;}
     let o={};try{o=JSON.parse(localStorage.getItem('shambhuALPOverridesV1')||'{}')}catch(e){}
     let prior=0; alpAutoGroups().forEach(z=>{if(String(z.date)<String(g.date)) prior+=chemNum(z.consumption);});
-    o[g.date]={...(o[g.date]||{}),mt:Math.round(chemNum(mt)),consumption:chemNum(cons),stackText:stacks,wheatMt:Math.round(chemNum(wm)),riceMt:Math.round(chemNum(rm)),wheat:Number(g.wheat||0),rice:Number(g.rice||0),count:Number(g.count||0),wheatStacks:g.wheatStacks||[],riceStacks:g.riceStacks||[],stackWeights:g.stackWeights||collectStackWeights(g),progressive:prior+chemNum(cons),locked:true};localStorage.setItem('shambhuALPOverridesV1',JSON.stringify(o));
+    o[g.date]={...(o[g.date]||{}),mt:Math.round(chemNum(mt)),bags:chemNum(bags),consumption:alpConsumptionFromBags(bags),stackText:stacks,wheatMt:Math.round(chemNum(wm)),riceMt:Math.round(chemNum(rm)),wheat:Number(g.wheat||0),rice:Number(g.rice||0),count:Number(g.count||0),wheatStacks:g.wheatStacks||[],riceStacks:g.riceStacks||[],stackWeights:g.stackWeights||collectStackWeights(g),progressive:prior+chemNum(cons),locked:true};localStorage.setItem('shambhuALPOverridesV1',JSON.stringify(o));
     let ed2={};try{ed2=JSON.parse(localStorage.getItem('shambhuALPEditingV1')||'{}')}catch(e){} delete ed2[g.date];localStorage.setItem('shambhuALPEditingV1',JSON.stringify(ed2));
     refreshALPRegister();
   };
