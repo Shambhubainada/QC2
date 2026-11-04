@@ -2271,7 +2271,7 @@ document.addEventListener('DOMContentLoaded',function(){
       <div class="chem-note" style="display:none!important">हर chemical का अलग folder है। Folder खोलने पर उसी chemical का अलग register, month-wise report, View, PDF और Excel option मिलेगा.</div>
     </div>`;
   }
-  function alpConsumptionFromBags(bags){return Math.round(chemNum(bags)*0.0004714*1000)/1000;}
+  function alpConsumptionFromBags(bags){const rawGrams=chemNum(bags)*0.0004714*1000;return Math.round(rawGrams/3)*3/1000;}
   function alpAutoGroups(){
     const a=rows.filter(r=>qty(r)>0 && underFlag(r));
     const groups={};
