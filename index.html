@@ -122,6 +122,12 @@ select{width:100%;border:1px solid #cddbd3;border-radius:7px;padding:7px 8px;fon
 @media(max-width:380px){.stack-summary{grid-template-columns:repeat(2,minmax(0,1fr))}
 .head-row{display:flex;align-items:center;justify-content:space-between;gap:12px}.install-app{display:flex;align-items:center;gap:8px;border:1px solid #ffffff55;background:#ffffff18;color:#fff;border-radius:11px;padding:6px 10px;font:700 11px system-ui;cursor:pointer;white-space:nowrap}.install-app img{width:42px;height:42px;border-radius:9px}.stack-heading{gap:6px}.stack-heading .tab{padding:5px 8px;font-size:11px}.stack-actions .tab{padding:5px 8px;font-size:11px}.stack-table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}.stack-table td{white-space:nowrap}
 @media(max-width:380px){.install-app{padding:4px 6px;gap:5px}.install-app img{width:36px;height:36px}.install-app span{font-size:10px}}
+
+/* New ALP (Volume) shares the original stack design without touching the original register. */
+#newAlpStackEntryPanel[hidden],#newAlpStackViewPanel[hidden]{display:none!important}
+#newAlpStackEntryPanel:not([hidden]),#newAlpStackViewPanel:not([hidden]){display:block}
+#newAlpStackModal:not(.open){display:none!important}
+.stack-card #newAlpStackViewPanel,.stack-card #newAlpStackSummary,.stack-card #newAlpStackMessage{display:none!important}
 </style>
 </head>
 <body>
@@ -174,6 +180,7 @@ select{width:100%;border:1px solid #cddbd3;border-radius:7px;padding:7px 8px;fon
 
 </section>
 </div></section>
+
 <section id="delta" class="panel">
 <div class="card">
 <h2>Delta dosage – stack</h2>
@@ -268,7 +275,7 @@ select{width:100%;border:1px solid #cddbd3;border-radius:7px;padding:7px 8px;fon
 </div>
 <div class="modal-backdrop" id="newAlpStackModal" aria-hidden="true">
  <div class="stack-modal" role="dialog" aria-modal="true" aria-labelledby="newAlpStackModalTitle">
-  <div class="modal-title"><h2 id="newAlpStackModalTitle">New ALP (Volume) – Add Stack Entry</h2><button type="button" class="modal-close" id="newAlpCloseStack" aria-label="Close">×</button></div>
+  <div class="modal-title"><h2 id="newAlpStackModalTitle">Add Stack Entry</h2><button type="button" class="modal-close" id="newAlpCloseStack" aria-label="Close">×</button></div>
   <div class="commodity-tabs" role="tablist" aria-label="Stack options">
    <button type="button" class="tab active" id="newAlpAddStackTab" role="tab" aria-selected="true">Add Stack</button>
    <button type="button" class="tab" id="newAlpStackDetailsTab" role="tab" aria-selected="false">Stack Details</button>
@@ -308,6 +315,7 @@ select{width:100%;border:1px solid #cddbd3;border-radius:7px;padding:7px 8px;fon
 <div id="newAlpStackSummary"></div><p id="newAlpStackMessage" class="stack-message" aria-live="polite">No stack details added.</p></div>
  </div>
 </div>
+
 <div class="footer">FCI Chemical Calculation · Shambhu Ta-II</div>
 </main>
 <script>
@@ -317,13 +325,17 @@ const fmt=(v,d=3)=>Number.isFinite(v)?v.toLocaleString('en-IN',{maximumFractionD
 const fmt3=(v)=>{const num=Number(v);return Number.isFinite(num)?num.toFixed(3):'—'};
 function put(id,v,d=3){$(id).textContent=fmt(v,d)}
 function calcALP(){let b=n('alpBags'),l=n('alpL'),w=n('alpW');let h=Math.ceil((b*.00125)*100-1e-10)/100,vol=l*w*h,qty=vol*.00675;put('alpH',h,2);put('alpVol',vol);put('alpQty',qty,4);$('alpTabs').textContent=Math.ceil(qty*1000/3).toLocaleString('en-IN')}
-function calcNewAlp(){let b=n('newAlpBags'),l=n('newAlpL'),w=n('newAlpW');let h=Math.ceil((b*.00125)*100-1e-10)/100,vol=l*w*h,qty=vol*.00675;put('newAlpH',h,2);put('newAlpVol',vol);put('newAlpQty',qty,4);$('newAlpTabs').textContent=Math.ceil(qty*1000/3).toLocaleString('en-IN')}
 function calcDelta(){let b=n('delBags'),l=n('delL'),w=n('delW'),h=b*.00125,a=(2*h*(l+w))+(l*w),adj=a*1.1;put('delH',h,4);put('delArea',adj,3);put('delQty',adj/100*.12,4);put('delSol',adj/100*3,3)}
 function calcMal(){let b=n('malBags'),l=n('malL'),w=n('malW'),h=b*.00125,a=(2*h*(l+w))+(l*w),adj=a*1.1,sol=adj/100*3;put('malH',h,4);put('malArea',adj,3);put('malSol',sol,3);put('malQty',sol*.01,4)}
 function calcAir(){let b=n('airBags'),l=n('airL'),w=n('airW'),h=b*.00125,vol=l*w*h,sol=vol/270;put('airH',h,4);put('airVol',vol,3);put('airSol',sol,4);put('airQty',sol*.01,5)}
-const calculators={alp:calcALP,newalp:calcNewAlp,delta:calcDelta,malstack:calcMal,aerial:calcAir};
-document.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>{let p=el.id.startsWith('newAlp')?'newalp':el.id.startsWith('alp')?'alp':el.id.startsWith('del')?'delta':el.id.startsWith('mal')?'malstack':'aerial';calculators[p]();if(el.id==='alpL'||el.id==='alpW'||el.id==='stackBags')updateStackALP();if(el.id==='newAlpL'||el.id==='newAlpW'||el.id==='newAlpStackBags')updateNewAlpStackALP()}));
+const calculators={alp:calcALP,delta:calcDelta,malstack:calcMal,aerial:calcAir};
+document.querySelectorAll('input').forEach(el=>el.addEventListener('input',()=>{if(el.id.startsWith('newAlp'))return;let p=el.id.startsWith('alp')?'alp':el.id.startsWith('del')?'delta':el.id.startsWith('mal')?'malstack':'aerial';calculators[p]();if(el.id==='alpL'||el.id==='alpW'||el.id==='stackBags')updateStackALP()}));
 document.querySelectorAll('.tab[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.tab[data-tab]').forEach(x=>x.classList.toggle('active',x===btn));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===btn.dataset.tab))}));
+
+
+function calcNewALP(){let b=n('newAlpBags'),l=n('newAlpL'),w=n('newAlpW');let h=Math.ceil((b*.00125)*100-1e-10)/100,vol=l*w*h,qty=vol*.00675;put('newAlpH',h,2);put('newAlpVol',vol);put('newAlpQty',qty,4);$('newAlpTabs').textContent=Math.ceil(qty*1000/3).toLocaleString('en-IN')}
+['newAlpBags','newAlpL','newAlpW'].forEach(id=>$(id).addEventListener('input',calcNewALP));
+calcNewALP();
 
 // Date-wise stack details, separate Bags and Qty, totals and tablet calculation
 const STACK_KEY='fciChemicalStackEntries_v2';
@@ -433,115 +445,6 @@ $('addStack').addEventListener('click',addStackRow);
  $('savePastedStacks').addEventListener('click',savePastedStacks);
 $('copyStacks').addEventListener('click',()=>{const entries=getEntries().filter(e=>!$('stackDateFilter').value||e.date===$('stackDateFilter').value);if(!entries.length){$('stackMessage').textContent='No stack details available for copying.';return;}const rows=[['Date','Stack Number','Commodity','Bags','Qty','Stack Volume (m³)','ALP (kg)'],...entries.map(e=>[e.date,e.stackNo,e.commodity,e.bags,e.qty||0,fmt(Number.isFinite(Number(e.volume))?Number(e.volume):stackVolume(e.bags,e.length??n('alpL'),e.breadth??n('alpW')),2),fmt(e.alp,4)])];const txt=rows.map(r=>r.join('\t')).join('\n');if(navigator.clipboard?.writeText){navigator.clipboard.writeText(txt).then(()=>$('stackMessage').textContent='Stack details copied.').catch(()=>$('stackMessage').textContent='Copy not available in this browser.')}else $('stackMessage').textContent='Copy not available in this browser.';});
 
-// Date-wise stack details, separate Bags and Qty, totals and tablet calculation
-const NEW_ALP_STACK_KEY='fciChemicalNewAlpVolumeEntries_v1';
-function newAlpStackHeight(bags){return Math.ceil((Math.max(0,Number(bags)||0)*.00125)*100-1e-10)/100}
-function newAlpStackVolume(bags,length=n('newAlpL'),breadth=n('newAlpW')){return Math.max(0,Number(length)||0)*Math.max(0,Number(breadth)||0)*newAlpStackHeight(bags)}
-function newAlpRequiredALP(bags){return newAlpStackVolume(bags)*.00675}
-// Tablets are calculated from the ALP kg value rounded to the 3 decimals shown in Stack Details.
-function newAlpTabletsForALP(alpKg){const shownALP=Math.round((Math.max(0,Number(alpKg)||0)+Number.EPSILON)*1000)/1000;return Math.ceil(shownALP*1000/3-1e-10)}
-function updateNewAlpStackALP(){const bags=n('newAlpStackBags');$('newAlpStackChemical').value=bags?fmt(newAlpRequiredALP(bags),4):''}
-$('newAlpStackBags').addEventListener('input',updateNewAlpStackALP);
-function newAlpTodayLocal(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
-function openNewAlpStackModal(){$('newAlpStackDate').value=newAlpTodayLocal();showNewAlpStackEntryTab();$('newAlpStackModal').classList.add('open');$('newAlpStackModal').setAttribute('aria-hidden','false');$('newAlpStackNo').focus()}
-function closeNewAlpStackModal(){$('newAlpStackModal').classList.remove('open');$('newAlpStackModal').setAttribute('aria-hidden','true')}
-$('newAlpOpenStack').addEventListener('click',openNewAlpStackModal);$('newAlpCloseStack').addEventListener('click',closeNewAlpStackModal);$('newAlpCancelStack').addEventListener('click',closeNewAlpStackModal);
-$('newAlpStackModal').addEventListener('click',e=>{if(e.target===$('newAlpStackModal'))closeNewAlpStackModal()});
-function getNewAlpEntries(){try{return JSON.parse(localStorage.getItem(NEW_ALP_STACK_KEY)||'[]')}catch(e){return []}}
-function saveNewAlpEntries(entries){localStorage.setItem(NEW_ALP_STACK_KEY,JSON.stringify(entries))}
-function addNewAlpStackRow(){
- updateNewAlpStackALP();const date=$('newAlpStackDate').value,stackNo=$('newAlpStackNo').value.trim(),commodity=$('newAlpStackCommodity').value,bags=Number($('newAlpStackBags').value),qty=Math.max(0,Number($('newAlpStackQty').value)||0),alp=newAlpRequiredALP(bags);
- if(!date||!stackNo||$('newAlpStackBags').value.trim()===''||!Number.isFinite(bags)||bags<=0){$('newAlpStackMessage').textContent='Date, Stack Number and Bags are mandatory. Please enter valid Bags.';return;}
- const entries=getNewAlpEntries();const length=n('newAlpL'),breadth=n('newAlpW'),height=newAlpStackHeight(bags),volume=length*breadth*height;entries.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,7),date,stackNo,commodity,bags,qty,alp,length,breadth,height,volume});saveNewAlpEntries(entries);renderNewAlpStacks();$('newAlpStackNo').value='';$('newAlpStackBags').value='';$('newAlpStackQty').value='';$('newAlpStackChemical').value='';closeNewAlpStackModal();$('newAlpStackMessage').textContent='Stack entry saved date-wise.';
-}
-function renderNewAlpStacks(){
- const allEntries=getNewAlpEntries().sort((a,b)=>b.date.localeCompare(a.date)||String(a.stackNo).localeCompare(String(b.stackNo),undefined,{numeric:true}));
- const selectedDate=$('newAlpStackDateFilter').value;const detailsOpen=!$('newAlpStackViewPanel').hidden;const entries=(detailsOpen&&selectedDate)?allEntries.filter(e=>e.date===selectedDate):[];$('newAlpStackRows').innerHTML='';
- entries.forEach(e=>{const tr=document.createElement('tr');tr.dataset.id=e.id;tr.className=e.commodity==='Wheat'?'wheat-row':'rice-row';const alpKg=Math.max(0,Number(e.alp)||0);const tablets=newAlpTabletsForALP(alpKg);const volume=Number.isFinite(Number(e.volume))?Number(e.volume):newAlpStackVolume(e.bags,e.length??n('newAlpL'),e.breadth??n('newAlpW'));const cells=[e.stackNo,e.commodity,fmt(Number(e.bags),0),fmt(Number(e.qty||0),3),fmt3(volume),fmt3(alpKg),fmt(tablets,0)];cells.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if(i===1)td.className='commodity-cell';if(i===6){td.className='tablet-cell';td.dataset.label='Tablets Used';td.setAttribute('aria-label','Tablets Used: '+v)}if(i===4){td.className='volume-cell';td.dataset.label='Stack Volume';td.setAttribute('aria-label','Stack Volume: '+v+' cubic metre')}tr.appendChild(td)});const action=document.createElement('td');action.style.cssText='text-align:center';const del=document.createElement('button');del.type='button';del.textContent='×';del.title='Delete row';del.className='tab';del.style.cssText='padding:2px 6px;font-size:12px';del.addEventListener('click',()=>{saveNewAlpEntries(getNewAlpEntries().filter(x=>x.id!==e.id));renderNewAlpStacks()});action.appendChild(del);tr.appendChild(action);$('newAlpStackRows').appendChild(tr)});
- const groups={};entries.forEach(e=>(groups[e.date]??=[]).push(e));const summary=$('newAlpStackSummary');summary.innerHTML='';
- Object.keys(groups).sort().reverse().forEach(date=>{const list=groups[date],w=list.filter(x=>x.commodity==='Wheat'),r=list.filter(x=>x.commodity==='Rice'),sum=a=>({count:a.length,bags:a.reduce((s,x)=>s+Number(x.bags||0),0),qty:a.reduce((s,x)=>s+Number(x.qty||0),0),alp:a.reduce((s,x)=>s+Number(x.alp||0),0)}),ws=sum(w),rs=sum(r),total=sum(list),tablets=list.reduce((sum,x)=>sum+newAlpTabletsForALP(x.alp),0),volume=list.reduce((sum,x)=>sum+(Number.isFinite(Number(x.volume))?Number(x.volume):newAlpStackVolume(x.bags,x.length??n('newAlpL'),x.breadth??n('newAlpW'))),0);const heading=document.createElement('div');heading.className='date-group';heading.textContent=`Date-wise Total · ${total.count} Stacks`;summary.appendChild(heading);const grid=document.createElement('div');grid.className='stack-summary';[['Total Stacks',fmt(total.count,0)],['Wheat Qty Total',fmt(ws.qty,3)],['Rice Qty Total',fmt(rs.qty,3)],['Total Qty',fmt(total.qty,3)],['Total Stack Volume (m³)',fmt3(volume)],['Total Bags',fmt(total.bags,0)],['Total ALP kg',fmt3(total.alp)],['Tablets Used (3 gm)',fmt(tablets,0)]].forEach(([label,value])=>{const box=document.createElement('div');box.className='summary-box';const small=document.createElement('small');small.textContent=label;const strong=document.createElement('strong');strong.textContent=value;box.append(small,strong);grid.appendChild(box)});summary.appendChild(grid)});
- $('newAlpStackMessage').textContent=!allEntries.length?'No stack details added.':(!detailsOpen?'Stack entries saved. Open Stack Details tab and select a date to view.':(!selectedDate?'Select a date to view that day’s fumigation details.':(entries.length?`${entries.length} stack(s) on ${selectedDate}.`:`No fumigation entries found for ${selectedDate}.`)));
-}
-function showNewAlpStackEntryTab(){ $('newAlpStackEntryPanel').hidden=false; $('newAlpStackViewPanel').hidden=true; $('newAlpAddStackTab').classList.add('active'); $('newAlpStackDetailsTab').classList.remove('active'); $('newAlpAddStackTab').setAttribute('aria-selected','true'); $('newAlpStackDetailsTab').setAttribute('aria-selected','false'); }
-function showNewAlpStackDetails(){ $('newAlpStackEntryPanel').hidden=true; $('newAlpStackViewPanel').hidden=false; $('newAlpAddStackTab').classList.remove('active'); $('newAlpStackDetailsTab').classList.add('active'); $('newAlpAddStackTab').setAttribute('aria-selected','false'); $('newAlpStackDetailsTab').setAttribute('aria-selected','true'); renderNewAlpStacks(); }
-$('newAlpAddStackTab').addEventListener('click',showNewAlpStackEntryTab);$('newAlpStackDetailsTab').addEventListener('click',showNewAlpStackDetails);
-$('newAlpStackDateFilter').addEventListener('change',renderNewAlpStacks);
-$('newAlpAddStack').addEventListener('click',addNewAlpStackRow);
- $('newAlpTogglePasteData').addEventListener('click',()=>{$('newAlpPasteDataPanel').hidden=!$('newAlpPasteDataPanel').hidden;if(!$('newAlpPasteDataPanel').hidden)$('newAlpPasteStackData').focus()});
- $('newAlpCancelPasteData').addEventListener('click',()=>{$('newAlpPasteDataPanel').hidden=true;$('newAlpPasteStackData').value=''});
- function newAlpPasteKey(value){return String(value||'').toLowerCase().replace(/\u00a0/g,' ').replace(/[^a-z0-9]/g,'')}
- function newAlpPasteSplitLine(line){
-  const s=String(line||'').trim();
-  if(s.includes('\t'))return s.split('\t');
-  if(s.includes('|'))return s.split('|');
-  if(s.includes(';'))return s.split(';');
-  if(s.includes(','))return s.split(',');
-  return s.split(/\s{2,}/);
- }
- function newAlpPasteColumnIndex(headers,aliases){return headers.findIndex(h=>{const key=newAlpPasteKey(h);return aliases.some(a=>key===a||key.startsWith(a)||key.includes(a))})}
- function saveNewAlpPastedStacks(){
-  const date=$('newAlpStackDate').value,raw=$('newAlpPasteStackData').value.trim();
-  if(!date){$('newAlpStackScanStatus').textContent='Pehle Fumigation Date select karein.';return}
-  if(!raw){$('newAlpStackScanStatus').textContent='Pehle Pest / Excel data paste karein.';return}
-  const lines=raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
-  const aliases={
-   stack:['stack','stackno','stacknumber','stacknum','stk','stkno','stknumber','stackid','lotno','lotnumber','godownstack','stackno.','stacknoof'],
-   bags:['bag','bags','totalbags','nobags','numberofbags','noofbags','bagno','bagnos','totalnoofbags','totalnumberofbags','bagsinstack','bagquantity','noofbag'],
-   qty:['qty','quantity','totalqty','weight','netqty','netquantity','quantitymt','qtymt','weightmt','netweight','totalweight','qtl','quintal'],
-   commodity:['commodity','comm','crop','foodgrain','grain','nameofcommodity','commodityname','item','product']
-  };
-  let headerLine=-1,headerIndexes=null,headerCols=[];
-  // Header can appear below report title/date/blank or other introductory rows.
-  for(let i=0;i<Math.min(lines.length,15);i++){
-   const cols=newAlpPasteSplitLine(lines[i]).map(x=>x.trim().replace(/^['"]|['"]$/g,''));
-   const idx={};Object.keys(aliases).forEach(k=>idx[k]=newAlpPasteColumnIndex(cols,aliases[k]));
-   if(idx.stack>=0&&idx.bags>=0&&idx.commodity>=0&&idx.qty>=0){headerLine=i;headerIndexes=idx;headerCols=cols;break}
-  }
-  const cleanNumber=value=>{
-   let x=String(value||'').replace(/,/g,'').replace(/[₹]/g,'').replace(/\b(mt|kg|qtl|quintal|bags?)\b/ig,'').trim();
-   const m=x.match(/-?\d+(?:\.\d+)?/);return m?Number(m[0]):NaN;
-  };
-  const cleanStack=value=>String(value||'').trim().replace(/^['"]|['"]$/g,'').replace(/\s+/g,'').replace(/^(?:stack|stk|no|number)[:#-]?/i,'');
-  const cleanCommodity=value=>{const t=String(value||'').toLowerCase();if(/\bwheat\b|गेहूं|गेंहू/.test(t))return 'Wheat';if(/\brice\b|धान|चावल/.test(t))return 'Rice';return ''};
-  const rows=[];let skipped=0;
-  if(headerLine>=0){
-   // Header-driven extraction: the four needed fields may be in any column order.
-   for(let i=headerLine+1;i<lines.length;i++){
-    const vals=newAlpPasteSplitLine(lines[i]).map(x=>x.trim().replace(/^['"]|['"]$/g,''));
-    const stack=cleanStack(vals[headerIndexes.stack]);
-    const bags=cleanNumber(vals[headerIndexes.bags]);
-    const qty=headerIndexes.qty>=0?cleanNumber(vals[headerIndexes.qty]):0;
-    const commodity=headerIndexes.commodity>=0?cleanCommodity(vals[headerIndexes.commodity]):'';
-    if(!stack&&!Number.isFinite(bags)&&!commodity)continue;
-    if(!stack||!Number.isFinite(bags)||bags<=0||!commodity||!Number.isFinite(qty)||qty<0){skipped++;continue}
-    rows.push({stack,bags,qty,commodity});
-   }
-  }else{
-   // Header-less fallback: locate the stack pattern and commodity anywhere in each row;
-   // the largest numeric value is treated as Bags and the next as Qty.
-   for(const line of lines){
-    const cells=newAlpPasteSplitLine(line);const tokens=line.split(/[\t|;,\s]+/).filter(Boolean);
-    const stackToken=tokens.find(t=>/^[A-Za-z]?\d{1,4}\s*[/-]\s*\d{1,4}[A-Za-z]?$/i.test(t));
-    const commodity=cleanCommodity(line);
-    const nums=tokens.map(cleanNumber).filter(v=>Number.isFinite(v)&&v>0).sort((a,b)=>b-a);
-    if(!stackToken||!commodity||!nums.length)continue;
-    const stack=cleanStack(stackToken),bags=nums[0],qty=nums.length>1?nums[1]:0;
-    if(stack&&bags>0)rows.push({stack,bags,qty,commodity});else skipped++;
-   }
-  }
-  // Remove repeated header rows and duplicate data rows without touching valid distinct stacks.
-  const unique=[],seen=new Set();
-  rows.forEach(r=>{const key=[r.stack,r.bags,r.qty,r.commodity].join('|');if(!seen.has(key)){seen.add(key);unique.push(r)}else skipped++});
-  if(!unique.length){$('newAlpStackScanStatus').textContent='Valid data nahi mila. Pest Data ki poori table copy karein. Stack Number, Bags, Commodity aur Qty ke headings zaroor hon; unka sequence kuch bhi ho sakta hai.';return}
-  const entries=getNewAlpEntries();
-  unique.forEach(r=>{const length=n('newAlpL'),breadth=n('newAlpW'),height=newAlpStackHeight(r.bags),volume=length*breadth*height;entries.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,9),date,stackNo:r.stack,commodity:r.commodity,bags:r.bags,qty:r.qty,alp:newAlpRequiredALP(r.bags),length,breadth,height,volume})});
-  saveNewAlpEntries(entries);$('newAlpPasteDataPanel').hidden=true;$('newAlpPasteStackData').value='';
-  $('newAlpStackScanStatus').textContent=`${unique.length} Stack save hue. ${skipped} extra/invalid row(s) skip ki gayi. Sirf Stack Number, Bags, Commodity aur Qty liye gaye.`;renderNewAlpStacks();
- }
- $('newAlpSavePastedStacks').addEventListener('click',saveNewAlpPastedStacks);
-$('newAlpCopyStacks').addEventListener('click',()=>{const entries=getNewAlpEntries().filter(e=>!$('newAlpStackDateFilter').value||e.date===$('newAlpStackDateFilter').value);if(!entries.length){$('newAlpStackMessage').textContent='No stack details available for copying.';return;}const rows=[['Date','Stack Number','Commodity','Bags','Qty','Stack Volume (m³)','ALP (kg)'],...entries.map(e=>[e.date,e.stackNo,e.commodity,e.bags,e.qty||0,fmt(Number.isFinite(Number(e.volume))?Number(e.volume):newAlpStackVolume(e.bags,e.length??n('newAlpL'),e.breadth??n('newAlpW')),2),fmt(e.alp,4)])];const txt=rows.map(r=>r.join('\t')).join('\n');if(navigator.clipboard?.writeText){navigator.clipboard.writeText(txt).then(()=>$('newAlpStackMessage').textContent='Stack details copied.').catch(()=>$('newAlpStackMessage').textContent='Copy not available in this browser.')}else $('newAlpStackMessage').textContent='Copy not available in this browser.';});
-
-
 let deferredInstallPrompt=null;
 window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredInstallPrompt=e;$('installApp').querySelector('span').textContent='Create Shortcut'});
 $('installApp').addEventListener('click',async()=>{if(deferredInstallPrompt){deferredInstallPrompt.prompt();await deferredInstallPrompt.userChoice;deferredInstallPrompt=null;}else{alert('Chrome me shortcut banane ke liye: upar ⋮ menu kholen → Add to Home screen / Install app → Add.');}});
@@ -586,17 +489,133 @@ function saveScannedRows(){const date=$('stackDate').value;if(!date){$('stackSca
 async function processPaperPhoto(photo){if(!photo)return;$('stackScanStatus').textContent='Paper ki table aur rows scan ho rahi hain…';$('scanStackPaper').disabled=true;$('chooseStackGallery').disabled=true;try{const T=await loadTesseract();const result=await T.recognize(photo,'eng');const rows=parsePaperRows(result.data||{});if(rows.length)showScanPreview(rows);else $('stackScanStatus').textContent='Rows detect nahi hui. Photo seedhi, clear aur poori table ke saath dobara lein.';}catch(err){$('stackScanStatus').textContent='Scan nahi ho paya: '+(err.message||'Try again');}finally{$('scanStackPaper').disabled=false;$('chooseStackGallery').disabled=false}}
 $('scanStackPaper').addEventListener('click',()=>$('stackPaperPhoto').click());$('chooseStackGallery').addEventListener('click',()=>$('stackGalleryPhoto').click());
 $('stackPaperPhoto').addEventListener('change',e=>{processPaperPhoto(e.target.files&&e.target.files[0]);e.target.value=''});$('stackGalleryPhoto').addEventListener('change',e=>{processPaperPhoto(e.target.files&&e.target.files[0]);e.target.value=''});
-// Table-aware OCR: detect column headings and read each paper row separately.
-let newAlpScannedRows=[];
+updateStackALP();
+renderStacks();
 
-const newAlpNormOCR=s=>String(s||'').toLowerCase().replace(/[^a-z0-9/]/g,'');
-function parseNewAlpPaperRows(data){
+/* New ALP (Volume): separate storage and a private copy of the existing ALP stack workflow. */
+(()=>{
+// Date-wise stack details, separate Bags and Qty, totals and tablet calculation
+const STACK_KEY='fciChemicalStackEntries_new_alp_volume_v1';
+function stackHeight(bags){return Math.ceil((Math.max(0,Number(bags)||0)*.00125)*100-1e-10)/100}
+function stackVolume(bags,length=n('newAlpL'),breadth=n('newAlpW')){return Math.max(0,Number(length)||0)*Math.max(0,Number(breadth)||0)*stackHeight(bags)}
+function requiredALP(bags){return stackVolume(bags)*.00675}
+// Tablets are calculated from the ALP kg value rounded to the 3 decimals shown in Stack Details.
+function tabletsForALP(alpKg){const shownALP=Math.round((Math.max(0,Number(alpKg)||0)+Number.EPSILON)*1000)/1000;return Math.ceil(shownALP*1000/3-1e-10)}
+function updateStackALP(){const bags=n('newAlpStackBags');$('newAlpStackChemical').value=bags?fmt(requiredALP(bags),4):''}
+$('newAlpStackBags').addEventListener('input',updateStackALP);
+function todayLocal(){const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`}
+function openStackModal(){$('newAlpStackDate').value=todayLocal();showStackEntryTab();$('newAlpStackModal').classList.add('open');$('newAlpStackModal').setAttribute('aria-hidden','false');$('newAlpStackNo').focus()}
+function closeStackModal(){$('newAlpStackModal').classList.remove('open');$('newAlpStackModal').setAttribute('aria-hidden','true')}
+$('newAlpOpenStack').addEventListener('click',openStackModal);$('newAlpCloseStack').addEventListener('click',closeStackModal);$('newAlpCancelStack').addEventListener('click',closeStackModal);
+$('newAlpStackModal').addEventListener('click',e=>{if(e.target===$('newAlpStackModal'))closeStackModal()});
+function getEntries(){try{return JSON.parse(localStorage.getItem(STACK_KEY)||'[]')}catch(e){return []}}
+function saveEntries(entries){localStorage.setItem(STACK_KEY,JSON.stringify(entries))}
+function addStackRow(){
+ updateStackALP();const date=$('newAlpStackDate').value,stackNo=$('newAlpStackNo').value.trim(),commodity=$('newAlpStackCommodity').value,bags=Number($('newAlpStackBags').value),qty=Math.max(0,Number($('newAlpStackQty').value)||0),alp=requiredALP(bags);
+ if(!date||!stackNo||$('newAlpStackBags').value.trim()===''||!Number.isFinite(bags)||bags<=0){$('newAlpStackMessage').textContent='Date, Stack Number and Bags are mandatory. Please enter valid Bags.';return;}
+ const entries=getEntries();const length=n('newAlpL'),breadth=n('newAlpW'),height=stackHeight(bags),volume=length*breadth*height;entries.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,7),date,stackNo,commodity,bags,qty,alp,length,breadth,height,volume});saveEntries(entries);renderStacks();$('newAlpStackNo').value='';$('newAlpStackBags').value='';$('newAlpStackQty').value='';$('newAlpStackChemical').value='';closeStackModal();$('newAlpStackMessage').textContent='Stack entry saved date-wise.';
+}
+function renderStacks(){
+ const allEntries=getEntries().sort((a,b)=>b.date.localeCompare(a.date)||String(a.stackNo).localeCompare(String(b.stackNo),undefined,{numeric:true}));
+ const selectedDate=$('newAlpStackDateFilter').value;const detailsOpen=!$('newAlpStackViewPanel').hidden;const entries=(detailsOpen&&selectedDate)?allEntries.filter(e=>e.date===selectedDate):[];$('newAlpStackRows').innerHTML='';
+ entries.forEach(e=>{const tr=document.createElement('tr');tr.dataset.id=e.id;tr.className=e.commodity==='Wheat'?'wheat-row':'rice-row';const alpKg=Math.max(0,Number(e.alp)||0);const tablets=tabletsForALP(alpKg);const volume=Number.isFinite(Number(e.volume))?Number(e.volume):stackVolume(e.bags,e.length??n('newAlpL'),e.breadth??n('newAlpW'));const cells=[e.stackNo,e.commodity,fmt(Number(e.bags),0),fmt(Number(e.qty||0),3),fmt3(volume),fmt3(alpKg),fmt(tablets,0)];cells.forEach((v,i)=>{const td=document.createElement('td');td.textContent=v;if(i===1)td.className='commodity-cell';if(i===6){td.className='tablet-cell';td.dataset.label='Tablets Used';td.setAttribute('aria-label','Tablets Used: '+v)}if(i===4){td.className='volume-cell';td.dataset.label='Stack Volume';td.setAttribute('aria-label','Stack Volume: '+v+' cubic metre')}tr.appendChild(td)});const action=document.createElement('td');action.style.cssText='text-align:center';const del=document.createElement('button');del.type='button';del.textContent='×';del.title='Delete row';del.className='tab';del.style.cssText='padding:2px 6px;font-size:12px';del.addEventListener('click',()=>{saveEntries(getEntries().filter(x=>x.id!==e.id));renderStacks()});action.appendChild(del);tr.appendChild(action);$('newAlpStackRows').appendChild(tr)});
+ const groups={};entries.forEach(e=>(groups[e.date]??=[]).push(e));const summary=$('newAlpStackSummary');summary.innerHTML='';
+ Object.keys(groups).sort().reverse().forEach(date=>{const list=groups[date],w=list.filter(x=>x.commodity==='Wheat'),r=list.filter(x=>x.commodity==='Rice'),sum=a=>({count:a.length,bags:a.reduce((s,x)=>s+Number(x.bags||0),0),qty:a.reduce((s,x)=>s+Number(x.qty||0),0),alp:a.reduce((s,x)=>s+Number(x.alp||0),0)}),ws=sum(w),rs=sum(r),total=sum(list),tablets=list.reduce((sum,x)=>sum+tabletsForALP(x.alp),0),volume=list.reduce((sum,x)=>sum+(Number.isFinite(Number(x.volume))?Number(x.volume):stackVolume(x.bags,x.length??n('newAlpL'),x.breadth??n('newAlpW'))),0);const heading=document.createElement('div');heading.className='date-group';heading.textContent=`Date-wise Total · ${total.count} Stacks`;summary.appendChild(heading);const grid=document.createElement('div');grid.className='stack-summary';[['Total Stacks',fmt(total.count,0)],['Wheat Qty Total',fmt(ws.qty,3)],['Rice Qty Total',fmt(rs.qty,3)],['Total Qty',fmt(total.qty,3)],['Total Stack Volume (m³)',fmt3(volume)],['Total Bags',fmt(total.bags,0)],['Total ALP kg',fmt3(total.alp)],['Tablets Used (3 gm)',fmt(tablets,0)]].forEach(([label,value])=>{const box=document.createElement('div');box.className='summary-box';const small=document.createElement('small');small.textContent=label;const strong=document.createElement('strong');strong.textContent=value;box.append(small,strong);grid.appendChild(box)});summary.appendChild(grid)});
+ $('newAlpStackMessage').textContent=!allEntries.length?'No stack details added.':(!detailsOpen?'Stack entries saved. Open Stack Details tab and select a date to view.':(!selectedDate?'Select a date to view that day’s fumigation details.':(entries.length?`${entries.length} stack(s) on ${selectedDate}.`:`No fumigation entries found for ${selectedDate}.`)));
+}
+function showStackEntryTab(){ $('newAlpStackEntryPanel').hidden=false; $('newAlpStackViewPanel').hidden=true; $('newAlpAddStackTab').classList.add('active'); $('newAlpStackDetailsTab').classList.remove('active'); $('newAlpAddStackTab').setAttribute('aria-selected','true'); $('newAlpStackDetailsTab').setAttribute('aria-selected','false'); }
+function showStackDetails(){ $('newAlpStackEntryPanel').hidden=true; $('newAlpStackViewPanel').hidden=false; $('newAlpAddStackTab').classList.remove('active'); $('newAlpStackDetailsTab').classList.add('active'); $('newAlpAddStackTab').setAttribute('aria-selected','false'); $('newAlpStackDetailsTab').setAttribute('aria-selected','true'); renderStacks(); }
+$('newAlpAddStackTab').addEventListener('click',showStackEntryTab);$('newAlpStackDetailsTab').addEventListener('click',showStackDetails);
+$('newAlpStackDateFilter').addEventListener('change',renderStacks);
+$('newAlpAddStack').addEventListener('click',addStackRow);
+ $('newAlpTogglePasteData').addEventListener('click',()=>{$('newAlpPasteDataPanel').hidden=!$('newAlpPasteDataPanel').hidden;if(!$('newAlpPasteDataPanel').hidden)$('newAlpPasteStackData').focus()});
+ $('newAlpCancelPasteData').addEventListener('click',()=>{$('newAlpPasteDataPanel').hidden=true;$('newAlpPasteStackData').value=''});
+ function pasteKey(value){return String(value||'').toLowerCase().replace(/\u00a0/g,' ').replace(/[^a-z0-9]/g,'')}
+ function pasteSplitLine(line){
+  const s=String(line||'').trim();
+  if(s.includes('\t'))return s.split('\t');
+  if(s.includes('|'))return s.split('|');
+  if(s.includes(';'))return s.split(';');
+  if(s.includes(','))return s.split(',');
+  return s.split(/\s{2,}/);
+ }
+ function pasteColumnIndex(headers,aliases){return headers.findIndex(h=>{const key=pasteKey(h);return aliases.some(a=>key===a||key.startsWith(a)||key.includes(a))})}
+ function savePastedStacks(){
+  const date=$('newAlpStackDate').value,raw=$('newAlpPasteStackData').value.trim();
+  if(!date){$('newAlpStackScanStatus').textContent='Pehle Fumigation Date select karein.';return}
+  if(!raw){$('newAlpStackScanStatus').textContent='Pehle Pest / Excel data paste karein.';return}
+  const lines=raw.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+  const aliases={
+   stack:['stack','stackno','stacknumber','stacknum','stk','stkno','stknumber','stackid','lotno','lotnumber','godownstack','stackno.','stacknoof'],
+   bags:['bag','bags','totalbags','nobags','numberofbags','noofbags','bagno','bagnos','totalnoofbags','totalnumberofbags','bagsinstack','bagquantity','noofbag'],
+   qty:['qty','quantity','totalqty','weight','netqty','netquantity','quantitymt','qtymt','weightmt','netweight','totalweight','qtl','quintal'],
+   commodity:['commodity','comm','crop','foodgrain','grain','nameofcommodity','commodityname','item','product']
+  };
+  let headerLine=-1,headerIndexes=null,headerCols=[];
+  // Header can appear below report title/date/blank or other introductory rows.
+  for(let i=0;i<Math.min(lines.length,15);i++){
+   const cols=pasteSplitLine(lines[i]).map(x=>x.trim().replace(/^['"]|['"]$/g,''));
+   const idx={};Object.keys(aliases).forEach(k=>idx[k]=pasteColumnIndex(cols,aliases[k]));
+   if(idx.stack>=0&&idx.bags>=0&&idx.commodity>=0&&idx.qty>=0){headerLine=i;headerIndexes=idx;headerCols=cols;break}
+  }
+  const cleanNumber=value=>{
+   let x=String(value||'').replace(/,/g,'').replace(/[₹]/g,'').replace(/\b(mt|kg|qtl|quintal|bags?)\b/ig,'').trim();
+   const m=x.match(/-?\d+(?:\.\d+)?/);return m?Number(m[0]):NaN;
+  };
+  const cleanStack=value=>String(value||'').trim().replace(/^['"]|['"]$/g,'').replace(/\s+/g,'').replace(/^(?:stack|stk|no|number)[:#-]?/i,'');
+  const cleanCommodity=value=>{const t=String(value||'').toLowerCase();if(/\bwheat\b|गेहूं|गेंहू/.test(t))return 'Wheat';if(/\brice\b|धान|चावल/.test(t))return 'Rice';return ''};
+  const rows=[];let skipped=0;
+  if(headerLine>=0){
+   // Header-driven extraction: the four needed fields may be in any column order.
+   for(let i=headerLine+1;i<lines.length;i++){
+    const vals=pasteSplitLine(lines[i]).map(x=>x.trim().replace(/^['"]|['"]$/g,''));
+    const stack=cleanStack(vals[headerIndexes.stack]);
+    const bags=cleanNumber(vals[headerIndexes.bags]);
+    const qty=headerIndexes.qty>=0?cleanNumber(vals[headerIndexes.qty]):0;
+    const commodity=headerIndexes.commodity>=0?cleanCommodity(vals[headerIndexes.commodity]):'';
+    if(!stack&&!Number.isFinite(bags)&&!commodity)continue;
+    if(!stack||!Number.isFinite(bags)||bags<=0||!commodity||!Number.isFinite(qty)||qty<0){skipped++;continue}
+    rows.push({stack,bags,qty,commodity});
+   }
+  }else{
+   // Header-less fallback: locate the stack pattern and commodity anywhere in each row;
+   // the largest numeric value is treated as Bags and the next as Qty.
+   for(const line of lines){
+    const cells=pasteSplitLine(line);const tokens=line.split(/[\t|;,\s]+/).filter(Boolean);
+    const stackToken=tokens.find(t=>/^[A-Za-z]?\d{1,4}\s*[/-]\s*\d{1,4}[A-Za-z]?$/i.test(t));
+    const commodity=cleanCommodity(line);
+    const nums=tokens.map(cleanNumber).filter(v=>Number.isFinite(v)&&v>0).sort((a,b)=>b-a);
+    if(!stackToken||!commodity||!nums.length)continue;
+    const stack=cleanStack(stackToken),bags=nums[0],qty=nums.length>1?nums[1]:0;
+    if(stack&&bags>0)rows.push({stack,bags,qty,commodity});else skipped++;
+   }
+  }
+  // Remove repeated header rows and duplicate data rows without touching valid distinct stacks.
+  const unique=[],seen=new Set();
+  rows.forEach(r=>{const key=[r.stack,r.bags,r.qty,r.commodity].join('|');if(!seen.has(key)){seen.add(key);unique.push(r)}else skipped++});
+  if(!unique.length){$('newAlpStackScanStatus').textContent='Valid data nahi mila. Pest Data ki poori table copy karein. Stack Number, Bags, Commodity aur Qty ke headings zaroor hon; unka sequence kuch bhi ho sakta hai.';return}
+  const entries=getEntries();
+  unique.forEach(r=>{const length=n('newAlpL'),breadth=n('newAlpW'),height=stackHeight(r.bags),volume=length*breadth*height;entries.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,9),date,stackNo:r.stack,commodity:r.commodity,bags:r.bags,qty:r.qty,alp:requiredALP(r.bags),length,breadth,height,volume})});
+  saveEntries(entries);$('newAlpPasteDataPanel').hidden=true;$('newAlpPasteStackData').value='';
+  $('newAlpStackScanStatus').textContent=`${unique.length} Stack save hue. ${skipped} extra/invalid row(s) skip ki gayi. Sirf Stack Number, Bags, Commodity aur Qty liye gaye.`;renderStacks();
+ }
+ $('newAlpSavePastedStacks').addEventListener('click',savePastedStacks);
+$('newAlpCopyStacks').addEventListener('click',()=>{const entries=getEntries().filter(e=>!$('newAlpStackDateFilter').value||e.date===$('newAlpStackDateFilter').value);if(!entries.length){$('newAlpStackMessage').textContent='No stack details available for copying.';return;}const rows=[['Date','Stack Number','Commodity','Bags','Qty','Stack Volume (m³)','ALP (kg)'],...entries.map(e=>[e.date,e.stackNo,e.commodity,e.bags,e.qty||0,fmt(Number.isFinite(Number(e.volume))?Number(e.volume):stackVolume(e.bags,e.length??n('newAlpL'),e.breadth??n('newAlpW')),2),fmt(e.alp,4)])];const txt=rows.map(r=>r.join('\t')).join('\n');if(navigator.clipboard?.writeText){navigator.clipboard.writeText(txt).then(()=>$('newAlpStackMessage').textContent='Stack details copied.').catch(()=>$('newAlpStackMessage').textContent='Copy not available in this browser.')}else $('newAlpStackMessage').textContent='Copy not available in this browser.';});
+// Table-aware OCR: detect column headings and read each paper row separately.
+let tesseractLoader=null, scannedRows=[];
+async function loadTesseract(){
+ if(window.Tesseract)return window.Tesseract;
+ if(!tesseractLoader)tesseractLoader=new Promise((resolve,reject)=>{const script=document.createElement('script');script.src='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';script.onload=()=>window.Tesseract?resolve(window.Tesseract):reject(new Error('OCR library load failed'));script.onerror=()=>reject(new Error('Internet connection required to load paper scanner'));document.head.appendChild(script)});
+ return tesseractLoader;
+}
+const normOCR=s=>String(s||'').toLowerCase().replace(/[^a-z0-9/]/g,'');
+function parsePaperRows(data){
  const words=(data.words||[]).filter(w=>(w.text||'').trim()&&w.confidence>15);
  const byLine=new Map();
  words.forEach(w=>{const k=[w.block_num,w.par_num,w.line_num].join('-');if(!byLine.has(k))byLine.set(k,[]);byLine.get(k).push(w)});
  const lines=[...byLine.values()].map(a=>a.sort((x,y)=>x.bbox.x0-y.bbox.x0));
  let header=null;
- for(const line of lines){const t=line.map(w=>newAlpNormOCR(w.text));const hasStack=t.some(x=>/^(stack|stk|stackno)$/.test(x)),hasBags=t.some(x=>x.includes('bag')),hasQty=t.some(x=>x==='qty'||x==='quantity');if(hasStack&&hasBags&&hasQty){header={};line.forEach(w=>{const x=newAlpNormOCR(w.text),cx=(w.bbox.x0+w.bbox.x1)/2;if(/stack|stk/.test(x))header.stack=cx;else if(x.includes('bag'))header.bags=cx;else if(x==='qty'||x==='quantity')header.qty=cx;else if(x.includes('commodity')||x==='comm')header.commodity=cx});break}}
+ for(const line of lines){const t=line.map(w=>normOCR(w.text));const hasStack=t.some(x=>/^(stack|stk|stackno)$/.test(x)),hasBags=t.some(x=>x.includes('bag')),hasQty=t.some(x=>x==='qty'||x==='quantity');if(hasStack&&hasBags&&hasQty){header={};line.forEach(w=>{const x=normOCR(w.text),cx=(w.bbox.x0+w.bbox.x1)/2;if(/stack|stk/.test(x))header.stack=cx;else if(x.includes('bag'))header.bags=cx;else if(x==='qty'||x==='quantity')header.qty=cx;else if(x.includes('commodity')||x==='comm')header.commodity=cx});break}}
  const rows=[];
  for(const line of lines){const text=line.map(w=>w.text).join(' ');if(/stack|bags?|quantity|commodity|^s\.?\s+no/i.test(text))continue;
   const row={stack:'',bags:'',qty:'',commodity:''};
@@ -610,20 +629,20 @@ function parseNewAlpPaperRows(data){
  }
  const unique=[];const seen=new Set();rows.forEach(r=>{const key=[r.stack,r.bags,r.qty,r.commodity].join('|');if(!seen.has(key)&&(r.stack||r.bags||r.qty||r.commodity)){seen.add(key);unique.push(r)}});return unique;
 }
-function showNewAlpScanPreview(rows){
- newAlpScannedRows=rows;$('newAlpStackScanPreview').hidden=false;$('newAlpStackScanPreview').innerHTML='';
+function showScanPreview(rows){
+ scannedRows=rows;$('newAlpStackScanPreview').hidden=false;$('newAlpStackScanPreview').innerHTML='';
  const heading=document.createElement('p');heading.className='stack-message';heading.textContent=`${rows.length} row(s) detected. Save se pehle har value check/edit karein.`;$('newAlpStackScanPreview').appendChild(heading);
  const table=document.createElement('table');table.className='stack-table';table.innerHTML='<thead><tr><th>Stack</th><th>Bags</th><th>Qty</th><th>Commodity</th></tr></thead><tbody></tbody>';
- rows.forEach((r,i)=>{const tr=document.createElement('tr');[['stack','text'],['bags','number'],['qty','number'],['commodity','select']].forEach(([key,type])=>{const td=document.createElement('td');let el;if(type==='select'){el=document.createElement('select');['','Wheat','Rice'].forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v||'Select';el.appendChild(o)});el.value=r[key]}else{el=document.createElement('input');el.type=type;el.value=r[key];el.style.width='75px'}el.addEventListener('input',()=>newAlpScannedRows[i][key]=el.value);el.addEventListener('change',()=>newAlpScannedRows[i][key]=el.value);td.appendChild(el);tr.appendChild(td)});table.querySelector('tbody').appendChild(tr)});
- $('newAlpStackScanPreview').appendChild(table);const save=document.createElement('button');save.type='button';save.className='tab active';save.textContent='Save All Detected Stacks';save.addEventListener('click',saveNewAlpScannedRows);$('newAlpStackScanPreview').appendChild(save);
+ rows.forEach((r,i)=>{const tr=document.createElement('tr');[['stack','text'],['bags','number'],['qty','number'],['commodity','select']].forEach(([key,type])=>{const td=document.createElement('td');let el;if(type==='select'){el=document.createElement('select');['','Wheat','Rice'].forEach(v=>{const o=document.createElement('option');o.value=v;o.textContent=v||'Select';el.appendChild(o)});el.value=r[key]}else{el=document.createElement('input');el.type=type;el.value=r[key];el.style.width='75px'}el.addEventListener('input',()=>scannedRows[i][key]=el.value);el.addEventListener('change',()=>scannedRows[i][key]=el.value);td.appendChild(el);tr.appendChild(td)});table.querySelector('tbody').appendChild(tr)});
+ $('newAlpStackScanPreview').appendChild(table);const save=document.createElement('button');save.type='button';save.className='tab active';save.textContent='Save All Detected Stacks';save.addEventListener('click',saveScannedRows);$('newAlpStackScanPreview').appendChild(save);
 }
-function saveNewAlpScannedRows(){const date=$('newAlpStackDate').value;if(!date){$('newAlpStackScanStatus').textContent='Pehle Fumigation Date select karein.';return}const valid=newAlpScannedRows.filter(r=>/^\d{1,3}\/\d{1,3}$/.test(r.stack)&&Number(r.bags)>0&&Number(r.qty)>=0&&['Wheat','Rice'].includes(r.commodity));if(!valid.length){$('newAlpStackScanStatus').textContent='Valid rows nahi mili. Stack (jaise 1/15), Bags, Qty aur Commodity check karein.';return}const entries=getNewAlpEntries();valid.forEach(r=>{const bags=Number(r.bags);const length=n('newAlpL'),breadth=n('newAlpW'),height=newAlpStackHeight(bags),volume=length*breadth*height;entries.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,8),date,stackNo:r.stack,commodity:r.commodity,bags,qty:Number(r.qty)||0,alp:newAlpRequiredALP(bags),length,breadth,height,volume})});saveNewAlpEntries(entries);$('newAlpStackScanStatus').textContent=`${valid.length} Stack entries save ho gayi.`;$('newAlpStackScanPreview').hidden=true;newAlpScannedRows=[];renderNewAlpStacks()}
-async function processNewAlpPaperPhoto(photo){if(!photo)return;$('newAlpStackScanStatus').textContent='Paper ki table aur rows scan ho rahi hain…';$('newAlpScanStackPaper').disabled=true;$('newAlpChooseStackGallery').disabled=true;try{const T=await loadTesseract();const result=await T.recognize(photo,'eng');const rows=parseNewAlpPaperRows(result.data||{});if(rows.length)showNewAlpScanPreview(rows);else $('newAlpStackScanStatus').textContent='Rows detect nahi hui. Photo seedhi, clear aur poori table ke saath dobara lein.';}catch(err){$('newAlpStackScanStatus').textContent='Scan nahi ho paya: '+(err.message||'Try again');}finally{$('newAlpScanStackPaper').disabled=false;$('newAlpChooseStackGallery').disabled=false}}
+function saveScannedRows(){const date=$('newAlpStackDate').value;if(!date){$('newAlpStackScanStatus').textContent='Pehle Fumigation Date select karein.';return}const valid=scannedRows.filter(r=>/^\d{1,3}\/\d{1,3}$/.test(r.stack)&&Number(r.bags)>0&&Number(r.qty)>=0&&['Wheat','Rice'].includes(r.commodity));if(!valid.length){$('newAlpStackScanStatus').textContent='Valid rows nahi mili. Stack (jaise 1/15), Bags, Qty aur Commodity check karein.';return}const entries=getEntries();valid.forEach(r=>{const bags=Number(r.bags);const length=n('newAlpL'),breadth=n('newAlpW'),height=stackHeight(bags),volume=length*breadth*height;entries.push({id:Date.now()+'_'+Math.random().toString(36).slice(2,8),date,stackNo:r.stack,commodity:r.commodity,bags,qty:Number(r.qty)||0,alp:requiredALP(bags),length,breadth,height,volume})});saveEntries(entries);$('newAlpStackScanStatus').textContent=`${valid.length} Stack entries save ho gayi.`;$('newAlpStackScanPreview').hidden=true;scannedRows=[];renderStacks()}
+async function processPaperPhoto(photo){if(!photo)return;$('newAlpStackScanStatus').textContent='Paper ki table aur rows scan ho rahi hain…';$('newAlpScanStackPaper').disabled=true;$('newAlpChooseStackGallery').disabled=true;try{const T=await loadTesseract();const result=await T.recognize(photo,'eng');const rows=parsePaperRows(result.data||{});if(rows.length)showScanPreview(rows);else $('newAlpStackScanStatus').textContent='Rows detect nahi hui. Photo seedhi, clear aur poori table ke saath dobara lein.';}catch(err){$('newAlpStackScanStatus').textContent='Scan nahi ho paya: '+(err.message||'Try again');}finally{$('newAlpScanStackPaper').disabled=false;$('newAlpChooseStackGallery').disabled=false}}
 $('newAlpScanStackPaper').addEventListener('click',()=>$('newAlpStackPaperPhoto').click());$('newAlpChooseStackGallery').addEventListener('click',()=>$('newAlpStackGalleryPhoto').click());
-$('newAlpStackPaperPhoto').addEventListener('change',e=>{processNewAlpPaperPhoto(e.target.files&&e.target.files[0]);e.target.value=''});$('newAlpStackGalleryPhoto').addEventListener('change',e=>{processNewAlpPaperPhoto(e.target.files&&e.target.files[0]);e.target.value=''});
+$('newAlpStackPaperPhoto').addEventListener('change',e=>{processPaperPhoto(e.target.files&&e.target.files[0]);e.target.value=''});$('newAlpStackGalleryPhoto').addEventListener('change',e=>{processPaperPhoto(e.target.files&&e.target.files[0]);e.target.value=''});
 updateStackALP();
 renderStacks();
-updateNewAlpStackALP();
-renderNewAlpStacks();
+})();
+
 </script>
 </body></html>
