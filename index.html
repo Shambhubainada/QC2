@@ -712,6 +712,36 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
 .note-add-toggle{background:linear-gradient(100deg,#126b4b,#168c65)!important;color:#fff!important;border-radius:11px!important}
 .note-entry-panel{border-radius:14px!important;box-shadow:0 5px 18px #0b68401a}
 </style>
+
+<style id="shambhu-modern-polish">
+:root{--sh-card-shadow:0 5px 18px rgba(5,55,38,.075)}
+body{background:linear-gradient(180deg,#edf5f1 0,#f6f9f7 230px,#f3f7f5 100%)}
+.top.shambhu-responsive-header{box-shadow:0 5px 20px rgba(0,35,22,.16);border-bottom:3px solid #b5d8c6;position:relative}
+.content{max-width:1600px;margin-left:auto;margin-right:auto}
+.panel,.card,.kpi,.mobile-folder,.mo-report-card,.reportbtn,.quick button{box-shadow:var(--sh-card-shadow);transition:box-shadow .18s ease,transform .18s ease}
+.panel,.card{border:1px solid #d8e8df;border-radius:14px}
+.kpi{border-radius:14px!important;min-height:94px;border:1px solid rgba(12,93,60,.1)!important}
+.kpi .num{letter-spacing:-.5px}
+button,.pill,.tab{transition:filter .15s ease,transform .15s ease,box-shadow .15s ease}
+button:active,.pill:active,.tab:active{transform:translateY(1px)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #80c9a5!important;outline-offset:2px}
+.table-wrap, .stack-table-wrap, .priority-table-wrap,.mo-table-wrap{border-radius:11px;scrollbar-width:thin;scrollbar-color:#9ab9a8 #edf4f0}
+table thead th{position:sticky;top:0;z-index:2}
+tbody tr:nth-child(even) td{background-color:rgba(242,248,244,.75)}
+.shambhu-header-tools{gap:7px}
+.cloud-sync-badge{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;border:1px solid #cbded3;background:#f4faf6;color:#315847;font-size:10px;font-weight:900;white-space:nowrap;line-height:1.2}
+.cloud-sync-badge .sync-dot{width:7px;height:7px;border-radius:50%;background:#d39a28;box-shadow:0 0 0 3px rgba(211,154,40,.13);flex:0 0 auto}
+.cloud-sync-badge small{font-size:9px;font-weight:700;opacity:.75}
+.cloud-sync-badge.sync-ok{background:#e7f7ed;border-color:#a8d9ba;color:#14643a}.cloud-sync-badge.sync-ok .sync-dot{background:#16a34a;box-shadow:0 0 0 3px #16a34a22}
+.cloud-sync-badge.sync-pending{background:#fff7e6;border-color:#f0d18a;color:#8a5a08}.cloud-sync-badge.sync-pending .sync-dot{background:#e49b16;animation:syncPulse 1.2s infinite}
+.cloud-sync-badge.sync-offline{background:#fff0f0;border-color:#efb7b7;color:#a4262e}.cloud-sync-badge.sync-offline .sync-dot{background:#d92d3b}
+.cloud-sync-badge.sync-connecting .sync-dot{animation:syncPulse 1.2s infinite}
+@keyframes syncPulse{50%{opacity:.35;transform:scale(.8)}}
+@media(max-width:700px){.cloud-sync-badge{font-size:9px;padding:4px 7px}.cloud-sync-badge small{display:none}.shambhu-header-tools{gap:4px}.top.shambhu-responsive-header{box-shadow:0 3px 12px rgba(0,35,22,.14)}.panel,.card{border-radius:11px}.kpi{min-height:82px!important}}
+@media(max-width:390px){#cloudSyncText{max-width:76px;overflow:hidden;text-overflow:ellipsis}.cloud-sync-badge{gap:4px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition:none!important}}
+</style>
+
 </head>
 <body>
 <div class="pin-screen" id="pinScreen">
@@ -772,7 +802,7 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
     <button class="top-menu-btn" id="topMenuBtn" onclick="toggleTopMenu()" aria-label="Main menu" title="Main menu">☰</button>
     <button class="page-nav-btn" id="backBtn" onclick="goBackPage()" style="display:none">←</button>
     <button class="page-nav-btn" id="homeBtn" onclick="openPage('dashboard')" style="display:none">⌂</button>
-    <div class="shambhu-time-status"><span id="liveIndicator" class="live live-ok" aria-label="System online"></span><span id="today">--</span><i>|</i><span id="updated">--</span></div>
+    <div class="shambhu-time-status"><span id="liveIndicator" class="live live-ok" aria-label="System online"></span><span id="today">--</span><i>|</i><span id="updated">--</span></div><div id="cloudSyncBadge" class="cloud-sync-badge sync-connecting" role="status" aria-live="polite"><span class="sync-dot"></span><span id="cloudSyncText">Cloud Sync: Connecting</span><small id="cloudSyncTime"></small></div>
     <button id="installAppBtn" class="install-app-btn" onclick="installShambhuApp()" aria-label="Install app" title="Install app">⬇</button>
     <button id="alertBell" class="alert-bell" onclick="openPage('notepad')" aria-label="Alerts" title="Alerts">🔔<b id="alertCount">0</b></button>
     <button id="alertSoundBtn" class="alert-sound-mini" type="button" onclick="event.stopPropagation();toggleAlertMute()" title="Sound on/off" aria-label="Sound on/off">🔊</button>
@@ -890,6 +920,19 @@ body.page-open:not(.dashboard-open) #shambhuFloatingBack{display:flex}
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
+(function(){
+ const badge=()=>document.getElementById('cloudSyncBadge');
+ window.setShambhuCloudSyncState=function(state,detail){
+  const b=badge(),t=document.getElementById('cloudSyncText'),tm=document.getElementById('cloudSyncTime');if(!b||!t)return;
+  b.classList.remove('sync-ok','sync-pending','sync-offline','sync-connecting');
+  const labels={ok:'Cloud Sync: Synced',pending:'Cloud Sync: Saving…',offline:'Cloud Sync: Offline',connecting:'Cloud Sync: Connecting'};
+  b.classList.add('sync-'+(labels[state]?state:'connecting'));t.textContent=labels[state]||labels.connecting;
+  if(tm)tm.textContent=detail|| (state==='ok'?new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'}):'');
+ };
+ window.addEventListener('online',()=>window.setShambhuCloudSyncState('connecting'));
+ window.addEventListener('offline',()=>window.setShambhuCloudSyncState('offline'));
+ window.addEventListener('load',()=>window.setShambhuCloudSyncState(navigator.onLine?'connecting':'offline'));
+})();
 const CONFIG={SHEET_ID:"1igJ0rzEp3txMDdhjwjrMB5V9BkJcyjt74g1xWh3YSHo",SHEET_NAME:"Master Stock",GOOGLE_SHEET_URL:"https://docs.google.com/spreadsheets/d/1igJ0rzEp3txMDdhjwjrMB5V9BkJcyjt74g1xWh3YSHo/edit?usp=sharing",SHEDS:["9","14","18","20"],FUM_DAYS:30,MAL_DAYS:15};
 let rows=[],shedFilter="all",commodityFilter="all",currentPage=localStorage.getItem("shambhuCurrentPage")||"dashboard",loadedAt=null;
 const $=id=>document.getElementById(id);
@@ -1953,12 +1996,13 @@ function shambhuFirebaseInit(){
     if(!firebase.apps.length)firebase.initializeApp(SHAMBHU_FIREBASE_CONFIG);
     window.shambhuDB=firebase.firestore();
     try{shambhuDB.settings({experimentalForceLongPolling:true,useFetchStreams:false});}catch(e){}
-    shambhuFirebaseReady=true;
+    shambhuFirebaseReady=true; if(window.setShambhuCloudSyncState)window.setShambhuCloudSyncState(navigator.onLine?"connecting":"offline");
 
     /* Shared non-moisture data keeps timestamped whole-key sync. */
     const sharedRef=shambhuDB.collection('shambhuSync').doc('shared');
     let sharedFirst=true;
     shambhuSharedUnsub=sharedRef.onSnapshot(async snap=>{
+      if(window.setShambhuCloudSyncState)window.setShambhuCloudSyncState('ok');
       const remote=snap.exists?(snap.data()||{}):{};
       if(sharedFirst){
         sharedFirst=false;
@@ -1975,7 +2019,7 @@ function shambhuFirebaseInit(){
       shambhuFirebaseBusy=true;
       try{SHAMBHU_SHARED_KEYS.forEach(k=>{if(remote[k]===undefined)return;const d=shambhuDecode(String(remote[k])),lr=shambhuSharedRev.get(k)||0,p=shambhuPendingShared.get(k);if(p&&d.ts<p.ts)return;if(d.ts&&d.ts<lr)return;if(d.value===null)localStorage.removeItem(k);else localStorage.setItem(k,String(d.value));shambhuSharedRev.set(k,d.ts||Date.now());if(p&&d.ts>=p.ts)shambhuPendingShared.delete(k)});shambhuRefreshUI();}
       finally{shambhuFirebaseBusy=false}
-    },e=>console.warn('Firebase shared listener:',e));
+    },e=>{if(window.setShambhuCloudSyncState)window.setShambhuCloudSyncState('offline');console.warn('Firebase shared listener:',e)});
 
     /* Per-stack moisture listener. */
     shambhuKnownMoisture=JSON.parse(localStorage.getItem('shambhuMoistureActive')||'{}');
@@ -2008,8 +2052,8 @@ function shambhuFirebaseInit(){
     window.shambhuFirebaseSyncNow=()=>{SHAMBHU_SHARED_KEYS.forEach(k=>shambhuFirebasePushShared(k,localStorage.getItem(k)));const a=JSON.parse(localStorage.getItem('shambhuMoistureActive')||'{}');Object.keys(a).forEach(st=>shambhuFirebasePushMoistureStack(st,a[st]))};
   }catch(e){console.warn('Firebase init failed:',e)}
 }
-async function shambhuFirebasePushShared(key,value){if(!shambhuFirebaseReady||!SHAMBHU_SHARED_KEYS.includes(key))return;const ts=Date.now();shambhuSharedRev.set(key,ts);shambhuPendingShared.set(key,{value,ts});try{const data={};data[key]=shambhuEncode(value,ts);await shambhuDB.collection('shambhuSync').doc('shared').set(data,{merge:true});const p=shambhuPendingShared.get(key);if(p&&p.ts===ts)shambhuPendingShared.delete(key)}catch(e){console.warn('Firebase shared write failed:',e)}}
-async function shambhuFirebasePushMoistureStack(stack,record){if(!shambhuFirebaseReady||!stack)return;const id='stack_'+String(stack);const ts=Date.now();shambhuMoistureRev.set(id,ts);shambhuMoistureRev.set(id+'_pending',ts);try{await shambhuDB.collection('shambhuMoistureStacks').doc(id).set({record:JSON.stringify(record),ts,client:SHAMBHU_CLIENT_ID,deleted:false},{merge:true});if(shambhuMoistureRev.get(id+'_pending')===ts)shambhuMoistureRev.delete(id+'_pending')}catch(e){console.warn('Firebase moisture stack write failed:',e)}}
+async function shambhuFirebasePushShared(key,value){if(!shambhuFirebaseReady||!SHAMBHU_SHARED_KEYS.includes(key))return;if(window.setShambhuCloudSyncState)window.setShambhuCloudSyncState('pending');const ts=Date.now();shambhuSharedRev.set(key,ts);shambhuPendingShared.set(key,{value,ts});try{const data={};data[key]=shambhuEncode(value,ts);await shambhuDB.collection('shambhuSync').doc('shared').set(data,{merge:true});const p=shambhuPendingShared.get(key);if(p&&p.ts===ts)shambhuPendingShared.delete(key);if(window.setShambhuCloudSyncState&&!shambhuPendingShared.size)window.setShambhuCloudSyncState('ok')}catch(e){if(window.setShambhuCloudSyncState)window.setShambhuCloudSyncState('offline');console.warn('Firebase shared write failed:',e)}}
+async function shambhuFirebasePushMoistureStack(stack,record){if(!shambhuFirebaseReady||!stack)return;if(window.setShambhuCloudSyncState)window.setShambhuCloudSyncState('pending');const id='stack_'+String(stack);const ts=Date.now();shambhuMoistureRev.set(id,ts);shambhuMoistureRev.set(id+'_pending',ts);try{await shambhuDB.collection('shambhuMoistureStacks').doc(id).set({record:JSON.stringify(record),ts,client:SHAMBHU_CLIENT_ID,deleted:false},{merge:true});if(shambhuMoistureRev.get(id+'_pending')===ts)shambhuMoistureRev.delete(id+'_pending');if(window.setShambhuCloudSyncState&&!shambhuPendingShared.size)window.setShambhuCloudSyncState('ok')}catch(e){if(window.setShambhuCloudSyncState)window.setShambhuCloudSyncState('offline');console.warn('Firebase moisture stack write failed:',e)}}
 async function shambhuFirebaseDeleteMoistureStack(stack){if(!shambhuFirebaseReady||!stack)return;const id='stack_'+String(stack),ts=Date.now();shambhuMoistureRev.set(id,ts);shambhuMoistureRev.set(id+'_pending',ts);try{await shambhuDB.collection('shambhuMoistureStacks').doc(id).set({record:null,ts,client:SHAMBHU_CLIENT_ID,deleted:true},{merge:true})}catch(e){console.warn('Firebase moisture stack delete failed:',e)}}
 (function installFirebaseStorageSync(){
   const origSet=Storage.prototype.setItem,origRemove=Storage.prototype.removeItem;
@@ -2956,6 +3000,8 @@ body.page-open:not(.dashboard-open) #backBtn{background:#d92d3b!important;color:
  to{transform:translateY(-1px);text-shadow:0 1px 0 #fff,1px 1px 0 #222,2px 2px 0 #111,0 0 4px rgba(0,0,0,.4)}
 }
 </style>
+
+
 </body>
 <style id="alp-few-heavy-final-fix">
 .stack-item.stack-weight-toggle.weight-few em{background:#e7f7ec!important;color:#168a45!important;border:1px solid #9bd3ad!important}
